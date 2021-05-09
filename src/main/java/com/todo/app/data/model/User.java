@@ -1,43 +1,51 @@
-package com.todo.app.model;
+package com.todo.app.data.model;
 
 
-import com.todo.app.utils.AuditModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.todo.app.data.util.base.AuditModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Entity
 @Table(name = "users")
-public class User extends AuditModel {
+public class User extends AuditModel<User> {
 
     @Size(min = 5, max = 256)
-    @Column(unique = true)
-    private String login;
+    @Column(unique = true, nullable = false, length = 256)
+    private String email;
 
-    @Size
+    @Column(nullable = false, length = 1180)
     private String psw;
 
-    private String surname;
-
     private String name;
+
+    private String surname;
 
     private String patronymic;
 
     private Date birthdate;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<Task> tasks = new ArrayList<>();
+    @JsonIgnore
+    private final Set<Category> categories = new HashSet<>();
 
-    public String getLogin() {
-        return login;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setEmail(String login) {
+        this.email = login;
+    }
+
+    public String getPsw() {
+        return psw;
+    }
+
+    public void setPsw(String psw) {
+        this.psw = psw;
     }
 
     public String getSurname() {
@@ -52,8 +60,8 @@ public class User extends AuditModel {
         return name;
     }
 
-    public List<Task> getTasks() {
-        return tasks;
+    public Set<Category> getCategories() {
+        return categories;
     }
 
     public void setName(String name) {
@@ -76,32 +84,26 @@ public class User extends AuditModel {
         this.birthdate = birthdate;
     }
 
-    public void addTask(Task task) {
-        this.tasks.add(task);
-        task.setUser(this);
+    public void addCategory(Category category) {
+        this.categories.add(category);
+        category.setUser(this);
     }
 
-    public void removeTask(Task task) {
-        this.tasks.remove(task);
-        task.setUser(null);
+    public void removeCategory(Category category) {
+        this.categories.remove(category);
+        category.setUser(null);
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "login='" + login + '\'' +
+                "mail='" + email + '\'' +
+                ", psw='" + psw + '\'' +
                 ", surname='" + surname + '\'' +
                 ", name='" + name + '\'' +
                 ", patronymic='" + patronymic + '\'' +
                 ", birthdate=" + birthdate +
+                ", id=" + id +
                 '}';
-    }
-
-    public String getPsw() {
-        return psw;
-    }
-
-    public void setPsw(String psw) {
-        this.psw = psw;
     }
 }
