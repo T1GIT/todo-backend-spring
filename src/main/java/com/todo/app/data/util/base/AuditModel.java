@@ -1,4 +1,4 @@
-package com.todo.app.utils;
+package com.todo.app.data.util.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,7 +15,7 @@ import java.util.Date;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(value = {"createdAt", "updatedAt"}, allowGetters = true)
-public abstract class AuditModel extends AbstractModel {
+public abstract class AuditModel<T extends AuditModel<T>> extends AbstractModel<T> {
 
     @JsonIgnore
     @CreatedDate

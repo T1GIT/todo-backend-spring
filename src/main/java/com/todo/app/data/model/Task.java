@@ -22,9 +22,8 @@ public class Task extends AuditModel<Task> {
 
     private boolean completed;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "category_id", nullable = false)
     @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Category category;
 
     public String getTitle() {

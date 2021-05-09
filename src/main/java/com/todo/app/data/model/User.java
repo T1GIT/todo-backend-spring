@@ -28,8 +28,8 @@ public class User extends AuditModel<User> {
 
     private Date birthdate;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Category> categories = new HashSet<>();
 
     public String getEmail() {
