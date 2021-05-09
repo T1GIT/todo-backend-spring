@@ -21,7 +21,7 @@ public interface UserService {
 
     void changePsw(long userId, String psw) throws ResourceNotFoundException;
 
-    User edit(long userId, Consumer<User> editor) throws ResourceNotFoundException;
+    User update(long userId, Consumer<User> editor) throws ResourceNotFoundException;
 
     void delete(long userId) throws ResourceNotFoundException;
 }
