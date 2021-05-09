@@ -102,7 +102,7 @@ class UserServiceTest {
     @Test
     void edit() {
         String newName = "some another name";
-        userService.edit(user.getId(), eUser -> {
+        userService.update(user.getId(), eUser -> {
             eUser.setName(newName);
         });
         user = userService.login(new User()

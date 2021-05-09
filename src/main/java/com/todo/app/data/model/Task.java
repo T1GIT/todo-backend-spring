@@ -20,7 +20,8 @@ public class Task extends AuditModel<Task> {
 
     private Date executeDate;
 
-    private boolean completed;
+    @Column(nullable = false)
+    private boolean completed = false;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

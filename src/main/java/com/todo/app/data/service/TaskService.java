@@ -15,7 +15,7 @@ public interface TaskService {
 
     Task add(long categoryId, Task task) throws ResourceNotFoundException;
 
-    Task edit(long taskId, Consumer<Task> editor) throws ResourceNotFoundException;
+    Task update(long taskId, Consumer<Task> editor) throws ResourceNotFoundException;
 
     Task changeCategory(long taskId, long newCategoryId) throws ResourceNotFoundException;
 
