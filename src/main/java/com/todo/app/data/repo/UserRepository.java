@@ -1,6 +1,6 @@
-package com.todo.app.repo;
+package com.todo.app.data.repo;
 
-import com.todo.app.model.User;
+import com.todo.app.data.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,5 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findUserByLogin(String login);
+    Optional<User> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }
