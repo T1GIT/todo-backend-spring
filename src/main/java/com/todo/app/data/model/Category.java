@@ -15,13 +15,12 @@ public class Category extends AuditModel<Category> {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Task> tasks = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
     public String getName() {

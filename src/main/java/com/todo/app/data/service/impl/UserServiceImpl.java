@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User edit(long userId, Consumer<User> editor) throws ResourceNotFoundException {
+    public User update(long userId, Consumer<User> editor) throws ResourceNotFoundException {
         return userRepository.saveAndFlush(
                 userRepository.findById(userId).map(
                         user -> user.edit(editor)

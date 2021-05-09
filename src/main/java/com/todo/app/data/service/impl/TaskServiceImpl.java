@@ -46,7 +46,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task edit(long taskId, Consumer<Task> editor) {
+    public Task update(long taskId, Consumer<Task> editor) {
         return taskRepository.saveAndFlush(
                 taskRepository.findById(taskId).map(
                         task -> task.edit(editor)

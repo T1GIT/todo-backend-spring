@@ -20,11 +20,11 @@ public class Task extends AuditModel<Task> {
 
     private Date executeDate;
 
-    private boolean completed;
+    @Column(nullable = false)
+    private boolean completed = false;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "category_id", nullable = false)
     @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Category category;
 
     public String getTitle() {
