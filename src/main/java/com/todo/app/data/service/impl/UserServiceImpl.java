@@ -1,19 +1,17 @@
 package com.todo.app.data.service.impl;
 
-import com.todo.app.data.exception.EmailExistsException;
-import com.todo.app.data.exception.IncorrectPswException;
-import com.todo.app.data.exception.ResourceNotFoundException;
-import com.todo.app.data.exception.UserNotFoundException;
+import com.todo.app.data.util.exception.EmailExistsException;
+import com.todo.app.data.util.exception.EmailNotExistsException;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.Category;
 import com.todo.app.data.model.User;
 import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.service.UserService;
 import com.todo.app.security.Hash;
-import org.springframework.dao.DataIntegrityViolationException;
+import com.todo.app.security.util.exception.IncorrectPswException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.function.Consumer;
 
 
 @Transactional
@@ -32,48 +30,52 @@ public class UserServiceImpl implements UserService {
             throw new EmailExistsException(user.getEmail());
         return userRepository.saveAndFlush(user
                 .edit(u -> {
-                    u.setPsw(Hash.crypt(user.getPsw()));
+                    u.setEmail(user.getEmail());
+                    u.setPsw(Hash.encrypt(user.getPsw()));
                     u.addCategory(new Category().edit(
                             c -> c.setName("Задачи")));
                 }));
     }
 
     @Override
-    public User login(User user) throws UserNotFoundException, IncorrectPswException {
+    public User login(User user) throws ResourceNotFoundException, IncorrectPswException {
         return userRepository.saveAndFlush(
                 userRepository.findByEmail(user.getEmail()).map(foundUser -> {
-                    if (Hash.check(user.getPsw(), foundUser.getPsw())) {
-                        return foundUser;
-                    } else {
-                        throw new IncorrectPswException(user.getEmail());
-                    }
-                }).orElseThrow(() -> new ResourceNotFoundException(User.class, "email", user.getEmail())));
+                    if (!Hash.check(user.getPsw(), foundUser.getPsw()))
+                        throw new IncorrectPswException(user.getEmail(), user.getPsw());
+                    return foundUser;
+                }).orElseThrow(() -> new EmailNotExistsException(user.getEmail())));
     }
 
     @Override
-    public void changeEmail(long userId, String newEmail) throws EmailExistsException, ResourceNotFoundException {
+    public User changeEmail(long userId, String newEmail) throws EmailExistsException, ResourceNotFoundException {
         if (userRepository.existsByEmail(newEmail))
             throw new EmailExistsException(newEmail);
-        userRepository.saveAndFlush(
+        return userRepository.saveAndFlush(
                 userRepository.findById(userId).map(user -> user
                         .edit(u -> u.setEmail(newEmail))
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }
 
     @Override
-    public void changePsw(long userId, String newPsw) throws ResourceNotFoundException {
-        userRepository.saveAndFlush(
+    public User changePsw(long userId, String newPsw) throws ResourceNotFoundException {
+        return userRepository.saveAndFlush(
                 userRepository.findById(userId).map(user -> user
-                        .edit(u -> u.setPsw(Hash.crypt(newPsw)))
+                        .edit(u -> u.setPsw(Hash.encrypt(newPsw)))
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId))
         );
     }
 
     @Override
-    public User edit(long userId, Consumer<User> editor) throws ResourceNotFoundException {
+    public User update(long userId, User newUser) throws ResourceNotFoundException {
         return userRepository.saveAndFlush(
-                userRepository.findById(userId).map(
-                        user -> user.edit(editor)
+                userRepository.findById(userId).map(user -> user
+                        .edit(u -> {
+                            u.setName(newUser.getName());
+                            u.setSurname(newUser.getSurname());
+                            u.setPatronymic(newUser.getPatronymic());
+                            u.setBirthdate(newUser.getBirthdate());
+                        })
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }
 

@@ -2,22 +2,24 @@ package com.todo.app.data.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.todo.app.data.util.base.AuditModel;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.*;
 
 
 @Entity
 @Table(name = "users")
+@JsonIgnoreProperties(value = "psw", allowSetters = true)
 public class User extends AuditModel<User> {
 
-    @Size(min = 5, max = 256)
     @Column(unique = true, nullable = false, length = 256)
     private String email;
 
-    @Column(nullable = false, length = 1180)
+    @Column(nullable = false, length = 1181)
     private String psw;
 
     private String name;
@@ -97,7 +99,7 @@ public class User extends AuditModel<User> {
     @Override
     public String toString() {
         return "User{" +
-                "mail='" + email + '\'' +
+                "email='" + email + '\'' +
                 ", psw='" + psw + '\'' +
                 ", surname='" + surname + '\'' +
                 ", name='" + name + '\'' +

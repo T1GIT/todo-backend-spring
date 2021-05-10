@@ -1,12 +1,10 @@
 package com.todo.app.data.service;
 
 
-import com.todo.app.data.exception.ResourceNotFoundException;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.Task;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 
 public interface TaskService {
@@ -15,7 +13,9 @@ public interface TaskService {
 
     Task add(long categoryId, Task task) throws ResourceNotFoundException;
 
-    Task edit(long taskId, Consumer<Task> editor) throws ResourceNotFoundException;
+    Task update(long taskId, Task newTask) throws ResourceNotFoundException;
+
+    Task setCompleted(long taskId, Task newTask) throws ResourceNotFoundException;
 
     Task changeCategory(long taskId, long newCategoryId) throws ResourceNotFoundException;
 

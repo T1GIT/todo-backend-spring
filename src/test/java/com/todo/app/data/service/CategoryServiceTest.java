@@ -1,7 +1,7 @@
 package com.todo.app.data.service;
 
-import com.todo.app.Main;
-import com.todo.app.data.exception.ResourceNotFoundException;
+import com.todo.app.TodoApplication;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.Category;
 import com.todo.app.data.model.User;
 import org.junit.jupiter.api.AfterEach;
@@ -19,15 +19,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.transaction.Transactional;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = Main.class)
+        classes = TodoApplication.class)
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @TestPropertySource("classpath:application_test.properties")
@@ -37,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CategoryServiceTest {
 
     static User user;
-    static String name = "some name";
+    static String name = "some category name";
 
     @Autowired UserService userService;
     @Autowired CategoryService categoryService;
@@ -46,14 +44,14 @@ class CategoryServiceTest {
     void beforeEach() {
         user = userService.register(new User()
             .edit(eUser -> {
-                eUser.setEmail("example@mail.com");
+                eUser.setEmail("example@email.com");
                 eUser.setPsw("some password");
             }));
     }
 
     @AfterEach
     void afterEach() {
-        if (user != null) userService.delete(user.getId());
+        userService.delete(user.getId());
     }
 
     @Test
@@ -67,23 +65,29 @@ class CategoryServiceTest {
 
     @Test
     void add() {
-        int initAmount = user.getCategories().size();
-        Category category = categoryService.add(user.getId(), new Category()
-                .edit(c -> c.setName(name)));
-        assertEquals(initAmount + 1, user.getCategories().size());
-        System.out.println(category);
+        int amount = 100;
+        user.getCategories().forEach(user::removeCategory);
+        insertCategories(user.getId(), amount);
+        List<Category> categories = categoryService.getOf(user.getId());
+        assertEquals(amount, categories.size());
+        for (Category category: categories)
+            assertEquals(name, category.getName());
+        System.out.println(categories);
     }
 
     @Test
     void changeName() {
         String newName = "some new name";
-        Category category = categoryService.add(user.getId(), new Category()
-                .edit(c -> c.setName(name)));
-        categoryService.changeName(category.getId(), newName);
-        category = user.getCategories().parallelStream().filter(
-                c -> c.getName().equals(newName)).findAny().orElse(null);
-        System.out.println(category);
-        assertNotNull(category);
+        int amount = 100;
+        user.getCategories().forEach(user::removeCategory);
+        insertCategories(user.getId(), amount);
+        for (Category category: categoryService.getOf(user.getId()))
+            categoryService.changeName(category.getId(), newName);
+        List<Category> categories = categoryService.getOf(user.getId());
+        assertEquals(amount, categories.size());
+        for (Category category: categories)
+            assertEquals(newName, category.getName());
+        System.out.println(categories);
     }
 
     @Test
@@ -94,5 +98,21 @@ class CategoryServiceTest {
         assertThrows(
                 ResourceNotFoundException.class,
                 () -> categoryService.delete(category.getId()));
+    }
+
+    @Test
+    void sortSpeed() {
+        int amount = 1000;
+        insertCategories(user.getId(), amount);
+        for (int i = 0; i < amount; i++) {
+            categoryService.getOf(user.getId());
+        }
+    }
+
+    private void insertCategories(long userId, int amount) {
+        for (int i = 0; i < amount; i++) {
+            categoryService.add(userId, new Category()
+                    .edit(t -> t.setName(name)));
+        }
     }
 }

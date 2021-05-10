@@ -1,7 +1,8 @@
 package com.todo.app.data.service;
 
-import com.todo.app.Main;
-import com.todo.app.data.exception.ResourceNotFoundException;
+import com.todo.app.TodoApplication;
+import com.todo.app.data.model.Task;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = Main.class)
+        classes = TodoApplication.class)
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @TestPropertySource("classpath:application_test.properties")
@@ -32,9 +33,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceTest {
 
     static User user;
-    static String email = "example@mail.ru";
+    static String email = "example@email.ru";
     static String psw = "some password";
-    static String name = "some name";
+    static String name = "some user name";
 
     @Autowired
     UserService userService;
@@ -61,7 +62,7 @@ class UserServiceTest {
     void register() {
         assertEquals(email, user.getEmail());
         assertNotEquals(psw, user.getPsw());
-        assertEquals(1180, user.getPsw().length());
+        assertEquals(1181, user.getPsw().length());
         assertTrue(user.getPsw().matches("^.*:\\d*(:[a-z0-9]*){2}"));
     }
 
@@ -102,9 +103,9 @@ class UserServiceTest {
     @Test
     void edit() {
         String newName = "some another name";
-        userService.edit(user.getId(), eUser -> {
-            eUser.setName(newName);
-        });
+        userService.update(user.getId(), new User().edit(u -> {
+            u.setName(newName);
+        }));
         user = userService.login(new User()
                 .edit(eUser -> {
                     eUser.setEmail(email);

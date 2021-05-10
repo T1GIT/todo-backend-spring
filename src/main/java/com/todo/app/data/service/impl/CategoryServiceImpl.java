@@ -1,13 +1,11 @@
 package com.todo.app.data.service.impl;
 
-import com.todo.app.data.exception.ResourceNotFoundException;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.Category;
-import com.todo.app.data.model.Task;
 import com.todo.app.data.model.User;
 import com.todo.app.data.repo.CategoryRepository;
 import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.service.CategoryService;
-import com.todo.app.security.Hash;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -46,8 +44,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void changeName(long categoryId, String newName) throws ResourceNotFoundException {
-        categoryRepository.saveAndFlush(
+    public Category changeName(long categoryId, String newName) throws ResourceNotFoundException {
+        return categoryRepository.saveAndFlush(
                 categoryRepository.findById(categoryId).map(category -> category
                         .edit(c -> c.setName(newName))
                 ).orElseThrow(() -> new ResourceNotFoundException(Category.class, categoryId)));

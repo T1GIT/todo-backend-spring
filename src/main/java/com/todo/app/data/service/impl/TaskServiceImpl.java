@@ -1,6 +1,6 @@
 package com.todo.app.data.service.impl;
 
-import com.todo.app.data.exception.ResourceNotFoundException;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.Category;
 import com.todo.app.data.model.Task;
 import com.todo.app.data.repo.CategoryRepository;
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.function.Consumer;
 
 
 @Service
@@ -46,10 +46,29 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task edit(long taskId, Consumer<Task> editor) {
+    public Task update(long taskId, Task newTask) {
         return taskRepository.saveAndFlush(
-                taskRepository.findById(taskId).map(
-                        task -> task.edit(editor)
+                taskRepository.findById(taskId).map(task -> task
+                        .edit(t -> {
+                            t.setTitle(newTask.getTitle());
+                            t.setDescription(newTask.getDescription());
+                        })
+                ).orElseThrow(() -> new ResourceNotFoundException(Task.class, taskId)));
+    }
+
+    @Override
+    public Task setCompleted(long taskId, Task newTask) throws ResourceNotFoundException {
+        return taskRepository.saveAndFlush(
+                taskRepository.findById(taskId).map(task -> task
+                        .edit(t -> {
+                            if (newTask.isCompleted()) {
+                                t.setCompleted(true);
+                                t.setExecuteDate(new Date());
+                            } else {
+                                t.setCompleted(false);
+                                t.setExecuteDate(null);
+                            }
+                        })
                 ).orElseThrow(() -> new ResourceNotFoundException(Task.class, taskId)));
     }
 
