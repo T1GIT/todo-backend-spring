@@ -4,10 +4,8 @@ package com.todo.app.data.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.todo.app.data.util.base.AuditModel;
-
 import javax.persistence.*;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.*;
 
 
@@ -16,16 +14,28 @@ import java.util.*;
 @JsonIgnoreProperties(value = "psw", allowSetters = true)
 public class User extends AuditModel<User> {
 
+    @NotNull
+    @Size(min = 7, max = 255)
+    @Email(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,63})$")
     @Column(unique = true, nullable = false, length = 256)
     private String email;
 
+    @NotNull
+    @Size(min = 8, max = 1181)
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Zа-яА-Я]).*$")
     @Column(nullable = false, length = 1181)
     private String psw;
 
+    @Size(max = 50)
+    @Column(length = 50)
     private String name;
 
+    @Size(max = 50)
+    @Column(length = 50)
     private String surname;
 
+    @Size(max = 50)
+    @Column(length = 50)
     private String patronymic;
 
     private Date birthdate;

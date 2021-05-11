@@ -5,6 +5,8 @@ import com.todo.app.data.util.base.AuditModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Size;
 import java.util.*;
 
 
@@ -12,7 +14,8 @@ import java.util.*;
 @Table(name = "categories")
 public class Category extends AuditModel<Category> {
 
-    @Column(nullable = false)
+    @Size(max = 100)
+    @Column(nullable = false, length = 100)
     private String name;
 
     @JsonIgnore

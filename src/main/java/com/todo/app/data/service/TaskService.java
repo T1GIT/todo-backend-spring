@@ -19,5 +19,5 @@ public interface TaskService {
 
     Task changeCategory(long taskId, long newCategoryId) throws ResourceNotFoundException;
 
-    void delete(long taskId) throws ResourceNotFoundException;
+    void delete(long taskId);
 }

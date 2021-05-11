@@ -15,5 +15,5 @@ public interface CategoryService {
 
     Category changeName(long categoryId, String newName) throws ResourceNotFoundException;
 
-    void delete(long categoryId) throws ResourceNotFoundException;
+    void delete(long categoryId);
 }
