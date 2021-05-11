@@ -22,7 +22,7 @@ import java.util.Map;
 @Api(tags = "User controller",
         description = "Controller to provide operations with user models")
 @RestController
-@RequestMapping(TodoApplication.API_ROOT + "/user")
+@RequestMapping(TodoApplication.API_ROOT)
 public class UserController {
 
     private final UserService userService;
@@ -32,10 +32,9 @@ public class UserController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping(value = "{userId}/email", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/user/{userId}/email", produces = MediaType.APPLICATION_JSON_VALUE)
     public User changeEmail(
-            @PathVariable @ApiParam(example = "320")
-                    long userId,
+            @PathVariable long userId,
             @RequestBody User user) {
         if (!Validator.email(user.getEmail()))
             throw new InvalidEmailException(user.getEmail());
@@ -43,27 +42,26 @@ public class UserController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping(value = "{userId}/psw", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/user/{userId}/psw", produces = MediaType.APPLICATION_JSON_VALUE)
     public User changePsw(
             @PathVariable long userId,
             @RequestBody User user) {
-        Map<String, Object> response = new HashMap<>();
         if (!Validator.psw(user.getPsw()))
             throw new InvalidPswException(user.getPsw());
         return userService.changePsw(userId, user.getPsw());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping(value = "{userId}")
-    public void update(
+    @PutMapping(value = "/user/{userId}")
+    public void updateUser(
             @PathVariable long userId,
             @RequestBody User user) {
         userService.update(userId, user);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("{userId}")
-    public void delete(
+    @DeleteMapping("/user/{userId}")
+    public void deleteUser(
             @PathVariable long userId) {
         userService.delete(userId);
     }

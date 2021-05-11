@@ -57,11 +57,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task setCompleted(long taskId, Task newTask) throws ResourceNotFoundException {
+    public Task setCompleted(long taskId, boolean isCompleted) throws ResourceNotFoundException {
         return taskRepository.saveAndFlush(
                 taskRepository.findById(taskId).map(task -> task
                         .edit(t -> {
-                            if (newTask.isCompleted()) {
+                            if (isCompleted) {
                                 t.setCompleted(true);
                                 t.setExecuteDate(new Date());
                             } else {
@@ -70,17 +70,6 @@ public class TaskServiceImpl implements TaskService {
                             }
                         })
                 ).orElseThrow(() -> new ResourceNotFoundException(Task.class, taskId)));
-    }
-
-    @Deprecated
-    @Override
-    public Task changeCategory(long taskId, long newCategoryId) {
-        return taskRepository.saveAndFlush(
-                categoryRepository.findById(newCategoryId).map(
-                        category -> taskRepository.findById(taskId).map(
-                                task -> task.edit(category::addTask)
-                        ).orElseThrow(() -> new ResourceNotFoundException(Task.class, taskId))
-                ).orElseThrow(() -> new ResourceNotFoundException(Category.class, newCategoryId)));
     }
 
     @Override
