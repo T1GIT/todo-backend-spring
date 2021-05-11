@@ -1,7 +1,11 @@
 package com.todo.app.security;
 
 import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
+import java.time.Duration;
+
+import static java.time.Duration.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HashTest {
@@ -19,12 +23,37 @@ class HashTest {
 
     @Test
     void check() {
-        int amount = 10;
+        int amount = 5;
         for (int i = 0; i < amount; i++) {
-            String test = psw + i;
-            String invalidTest = i + test.substring(1);
-            assertTrue(Hash.check(test, Hash.encrypt(test)));
-            assertFalse(Hash.check(psw, Hash.encrypt(invalidTest)));
+            String psw = HashTest.psw + i;
+            String hash = Hash.encrypt(psw + i);
+            String invalidHash = Hash.encrypt("invalid_" + psw);
+            assertTrue(Hash.check(psw, hash));
+            assertFalse(Hash.check(psw, invalidHash));
         }
+    }
+
+    @Test
+    void speedTest() {
+        int min = 300;
+        int max = 1000;
+        String hash = Hash.encrypt(psw);
+        String invalidHash = Hash.encrypt("invalid_" + psw);
+        assertThrows(
+                AssertionFailedError.class,
+                () -> assertTimeout(
+                        ofMillis(min),
+                        () -> Hash.check(psw, hash)));
+        assertThrows(
+                AssertionFailedError.class,
+                () -> assertTimeout(
+                        ofMillis(min),
+                        () -> Hash.check(psw, invalidHash)));
+        assertTimeout(
+                ofMillis(max),
+                () -> Hash.check(psw, hash));
+        assertTimeout(
+                ofMillis(max),
+                () -> Hash.check(psw, invalidHash));
     }
 }

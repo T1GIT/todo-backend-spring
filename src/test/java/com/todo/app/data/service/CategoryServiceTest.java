@@ -95,14 +95,13 @@ class CategoryServiceTest {
         Category category = categoryService.add(user.getId(), new Category()
             .edit(c -> c.setName(name)));
         categoryService.delete(category.getId());
-        assertThrows(
-                ResourceNotFoundException.class,
+        assertDoesNotThrow(
                 () -> categoryService.delete(category.getId()));
     }
 
     @Test
     void sortSpeed() {
-        int amount = 1000;
+        int amount = 100;
         insertCategories(user.getId(), amount);
         for (int i = 0; i < amount; i++) {
             categoryService.getOf(user.getId());

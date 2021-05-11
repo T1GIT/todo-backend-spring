@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping(TodoApplication.API_ROOT + "/authorisation")
+@RequestMapping(TodoApplication.API_ROOT)
 public class AuthorisationController {
 
     private final UserService userService;
@@ -22,7 +22,7 @@ public class AuthorisationController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/authorisation/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public User register(@RequestBody User user) {
         if (!Validator.email(user.getEmail()))
             throw new InvalidEmailException(user.getEmail());
@@ -32,7 +32,7 @@ public class AuthorisationController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/authorisation/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public User login(@RequestBody User user) {
         if (!Validator.email(user.getEmail()))
             throw new InvalidEmailException(user.getEmail());

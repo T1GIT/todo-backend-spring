@@ -1,9 +1,8 @@
 package com.todo.app.data.util.base;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import com.fasterxml.jackson.annotation.*;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.function.Consumer;
 

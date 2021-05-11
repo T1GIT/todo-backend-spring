@@ -5,6 +5,7 @@ import com.todo.app.data.model.Task;
 import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.User;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -117,8 +118,7 @@ class UserServiceTest {
     @Test
     void delete() {
         userService.delete(user.getId());
-        assertThrows(
-                ResourceNotFoundException.class,
+        assertDoesNotThrow(
                 () -> userService.delete(user.getId()));
         user = null;
     }

@@ -109,14 +109,13 @@ class TaskServiceTest {
         Task task = taskService.add(category.getId(), new Task()
                 .edit(c -> c.setTitle(title)));
         taskService.delete(task.getId());
-        assertThrows(
-                ResourceNotFoundException.class,
+        assertDoesNotThrow(
                 () -> taskService.delete(task.getId()));
     }
 
     @Test
     void sortSpeed() {
-        int amount = 1000;
+        int amount = 100;
         insertTasks(category.getId(), amount);
         for (int i = 0; i < amount; i++) {
             taskService.getOf(category.getId());
