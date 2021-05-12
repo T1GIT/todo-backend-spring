@@ -3,8 +3,6 @@ package com.todo.app.security;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
-import java.time.Duration;
-
 import static java.time.Duration.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,10 +12,10 @@ class HashTest {
 
     @Test
     void crypt() {
-        String example = Hash.encrypt(psw);
+        String example = Hash.hash(psw);
         int amount = 10;
         for (int i = 0; i < amount; i++) {
-            assertNotEquals(example, Hash.encrypt(example + i));
+            assertNotEquals(example, Hash.hash(example + i));
         }
     }
 
@@ -26,8 +24,8 @@ class HashTest {
         int amount = 5;
         for (int i = 0; i < amount; i++) {
             String psw = HashTest.psw + i;
-            String hash = Hash.encrypt(psw + i);
-            String invalidHash = Hash.encrypt("invalid_" + psw);
+            String hash = Hash.hash(psw);
+            String invalidHash = Hash.hash("invalid_" + psw);
             assertTrue(Hash.check(psw, hash));
             assertFalse(Hash.check(psw, invalidHash));
         }
@@ -37,8 +35,8 @@ class HashTest {
     void speedTest() {
         int min = 300;
         int max = 1000;
-        String hash = Hash.encrypt(psw);
-        String invalidHash = Hash.encrypt("invalid_" + psw);
+        String hash = Hash.hash(psw);
+        String invalidHash = Hash.hash("invalid_" + psw);
         assertThrows(
                 AssertionFailedError.class,
                 () -> assertTimeout(

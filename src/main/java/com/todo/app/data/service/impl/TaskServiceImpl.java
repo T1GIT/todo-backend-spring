@@ -40,16 +40,16 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task add(long categoryId, Task task) {
         return taskRepository.saveAndFlush(
-            categoryRepository.findById(categoryId).map(
-                    category -> task.edit(category::addTask)
+            categoryRepository.findById(categoryId).map(category ->
+                    task.edit(category::addTask)
             ).orElseThrow(() -> new ResourceNotFoundException(Category.class, categoryId)));
     }
 
     @Override
     public Task update(long taskId, Task newTask) {
         return taskRepository.saveAndFlush(
-                taskRepository.findById(taskId).map(task -> task
-                        .edit(t -> {
+                taskRepository.findById(taskId).map(task ->
+                        task.edit(t -> {
                             t.setTitle(newTask.getTitle());
                             t.setDescription(newTask.getDescription());
                         })
@@ -59,8 +59,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task setCompleted(long taskId, boolean isCompleted) throws ResourceNotFoundException {
         return taskRepository.saveAndFlush(
-                taskRepository.findById(taskId).map(task -> task
-                        .edit(t -> {
+                taskRepository.findById(taskId).map(task ->
+                        task.edit(t -> {
                             if (isCompleted) {
                                 t.setCompleted(true);
                                 t.setExecuteDate(new Date());

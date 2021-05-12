@@ -38,16 +38,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category add(long userId, Category category) throws ResourceNotFoundException {
         return categoryRepository.saveAndFlush(
-                userRepository.findById(userId).map(
-                        user -> category.edit(user::addCategory)
+                userRepository.findById(userId).map(user ->
+                        category.edit(user::addCategory)
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }
 
     @Override
     public Category changeName(long categoryId, String newName) throws ResourceNotFoundException {
         return categoryRepository.saveAndFlush(
-                categoryRepository.findById(categoryId).map(category -> category
-                        .edit(c -> c.setName(newName))
+                categoryRepository.findById(categoryId).map(category ->
+                        category.edit(c -> c.setName(newName))
                 ).orElseThrow(() -> new ResourceNotFoundException(Category.class, categoryId)));
     }
 

@@ -3,20 +3,18 @@ package com.todo.app.security;
 import com.todo.app.security.util.enums.SecretLength;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class KeyGenTest {
+class KeyGeneratorTest {
 
     @Test
     void string() {
         SecretLength secretLength = SecretLength.SALT;
         int length = secretLength.getLength();
-        assertEquals(length, KeyGen.string(secretLength).length());
-        String example = KeyGen.string(secretLength);
+        assertEquals(length, KeyGenerator.string(secretLength).length());
+        String example = KeyGenerator.string(secretLength);
         for (int i = 0; i < length; i++) {
-            String test = KeyGen.string(secretLength);
+            String test = KeyGenerator.string(secretLength);
             assertNotEquals(example, test);
             example = test;
         }
@@ -26,10 +24,10 @@ class KeyGenTest {
     void bytes() {
         SecretLength secretLength = SecretLength.SALT;
         int length = secretLength.getLength();
-        assertEquals(length, KeyGen.bytes(secretLength).length);
-        byte[] example = KeyGen.bytes(secretLength);
+        assertEquals(length, KeyGenerator.bytes(secretLength).length);
+        byte[] example = KeyGenerator.bytes(secretLength);
         for (int i = 0; i < length; i++) {
-            byte[] test = KeyGen.bytes(secretLength);
+            byte[] test = KeyGenerator.bytes(secretLength);
             assertNotEquals(example, test);
             example = test;
         }

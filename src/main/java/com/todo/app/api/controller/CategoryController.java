@@ -14,10 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @Api(tags = "Category controller",
         description = "Controller to provide operations with category models")
 @RestController
-@RequestMapping(TodoApplication.API_ROOT)
 public class CategoryController {
     private final CategoryService categoryService;
 

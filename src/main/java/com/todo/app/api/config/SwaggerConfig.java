@@ -1,4 +1,4 @@
-package com.todo.app.api.controller.util.config;
+package com.todo.app.api.config;
 
 import com.todo.app.TodoApplication;
 import io.swagger.annotations.Api;
@@ -40,9 +40,9 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         return new ApiInfoBuilder()
                 .title("TODO REST API")
                 .description("This is server API allows creating users, theirs categories and tasks")
-                .version(TodoApplication.VERSION)
-                .license("Apache License Version 2.0") // TODO: add license type
-                .licenseUrl("https://www.apache.org/licenses/LICENSE-2.0\"") // TODO: add license url
+                .version("v0.1")
+                .license("Apache License Version 2.0") // TODO: put license type
+                .licenseUrl("https://www.apache.org/licenses/LICENSE-2.0\"") // TODO: put license url
                 .contact(new Contact("Dmitriy Derbin", "http://vk.com/t1monvk", "derbindima5@gmail.com"))
                 .build();
     }

@@ -22,7 +22,6 @@ import java.util.Map;
 @Api(tags = "User controller",
         description = "Controller to provide operations with user models")
 @RestController
-@RequestMapping(TodoApplication.API_ROOT)
 public class UserController {
 
     private final UserService userService;

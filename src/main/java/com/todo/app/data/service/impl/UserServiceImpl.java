@@ -28,12 +28,12 @@ public class UserServiceImpl implements UserService {
     public User register(User user) throws EmailExistsException {
         if (userRepository.existsByEmail(user.getEmail()))
             throw new EmailExistsException(user.getEmail());
-        return userRepository.saveAndFlush(user
-                .edit(u -> {
+        return userRepository.saveAndFlush(
+                user.edit(u -> {
                     u.setEmail(user.getEmail());
-                    u.setPsw(Hash.encrypt(user.getPsw()));
-                    u.addCategory(new Category().edit(
-                            c -> c.setName("Задачи")));
+                    u.setPsw(Hash.hash(user.getPsw()));
+                    u.addCategory(
+                            new Category().edit(c -> c.setName("Задачи")));
                 }));
     }
 
@@ -52,16 +52,16 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(newEmail))
             throw new EmailExistsException(newEmail);
         return userRepository.saveAndFlush(
-                userRepository.findById(userId).map(user -> user
-                        .edit(u -> u.setEmail(newEmail))
+                userRepository.findById(userId).map(user ->
+                        user.edit(u -> u.setEmail(newEmail))
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }
 
     @Override
     public User changePsw(long userId, String newPsw) throws ResourceNotFoundException {
         return userRepository.saveAndFlush(
-                userRepository.findById(userId).map(user -> user
-                        .edit(u -> u.setPsw(Hash.encrypt(newPsw)))
+                userRepository.findById(userId).map(user ->
+                        user.edit(u -> u.setPsw(Hash.hash(newPsw)))
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId))
         );
     }
@@ -69,8 +69,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(long userId, User newUser) throws ResourceNotFoundException {
         return userRepository.saveAndFlush(
-                userRepository.findById(userId).map(user -> user
-                        .edit(u -> {
+                userRepository.findById(userId).map(user ->
+                        user.edit(u -> {
                             u.setName(newUser.getName());
                             u.setSurname(newUser.getSurname());
                             u.setPatronymic(newUser.getPatronymic());

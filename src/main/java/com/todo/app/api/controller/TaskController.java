@@ -1,13 +1,18 @@
 package com.todo.app.api.controller;
 
+import com.todo.app.TodoApplication;
 import com.todo.app.data.model.Task;
 import com.todo.app.data.service.TaskService;
+import io.swagger.annotations.Api;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+@Api(tags = "Task controller",
+        description = "Controller to provide operations with task models")
 @RestController
 public class TaskController {
     private final TaskService taskService;

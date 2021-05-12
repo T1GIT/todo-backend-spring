@@ -4,6 +4,8 @@ package com.todo.app.data.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.todo.app.data.util.base.AuditModel;
+import com.todo.app.security.util.enums.Role;
+
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.*;
@@ -16,33 +18,41 @@ public class User extends AuditModel<User> {
 
     @NotNull
     @Size(min = 7, max = 255)
-    @Email(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,63})$")
+    @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,63})$")
     @Column(unique = true, nullable = false, length = 256)
-    private String email;
+    protected String email;
 
     @NotNull
     @Size(min = 8, max = 1181)
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Zа-яА-Я]).*$")
     @Column(nullable = false, length = 1181)
-    private String psw;
+    protected String psw;
 
     @Size(max = 50)
     @Column(length = 50)
-    private String name;
+    protected String name;
 
     @Size(max = 50)
     @Column(length = 50)
-    private String surname;
+    protected String surname;
 
     @Size(max = 50)
     @Column(length = 50)
-    private String patronymic;
+    protected String patronymic;
 
-    private Date birthdate;
+    protected Date birthdate;
+
+    @JsonIgnore
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.BASIC;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Category> categories = new HashSet<>();
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final Set<Refresh> refreshes = new HashSet<>();
 
     public String getEmail() {
         return email;
@@ -95,6 +105,18 @@ public class User extends AuditModel<User> {
     public void setBirthdate(Date birthdate) {
         this.birthdate = birthdate;
     }
+    
+    public Set<Refresh> getRefreshes() {
+        return refreshes;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
     public void addCategory(Category category) {
         this.categories.add(category);
@@ -104,6 +126,16 @@ public class User extends AuditModel<User> {
     public void removeCategory(Category category) {
         this.categories.remove(category);
         category.setUser(null);
+    }
+
+    public void addRefresh(Refresh refresh) {
+        this.refreshes.add(refresh);
+        refresh.setUser(this);
+    }
+
+    public void removeRefresh(Refresh refresh) {
+        this.refreshes.remove(refresh);
+        refresh.setUser(null);
     }
 
     @Override
