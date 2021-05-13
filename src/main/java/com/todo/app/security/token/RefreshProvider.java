@@ -1,28 +1,11 @@
 package com.todo.app.security.token;
 
-import com.google.common.base.Optional;
 import com.todo.app.api.util.CookieUtil;
-import com.todo.app.data.model.Refresh;
-import com.todo.app.security.Auth;
-import com.todo.app.security.KeyGenerator;
-import com.todo.app.security.util.enums.SecretLength;
-import com.todo.app.security.util.exception.MissedJwtException;
 import com.todo.app.security.util.exception.MissedRefreshException;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.security.Key;
 import java.time.Duration;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 
 public abstract class RefreshProvider {

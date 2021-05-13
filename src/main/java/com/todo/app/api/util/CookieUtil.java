@@ -50,12 +50,15 @@ public abstract class CookieUtil {
      * @return value of the cookie or null if cookie was not found
      */
     public static String get(HttpServletRequest request, String name) {
-        return Objects.requireNonNullElse(Arrays
-                        .stream(request.getCookies())
-                        .filter(c -> c.getName().equals(encode(name))).findAny()
-                        .map(cookie -> decode(cookie.getValue()))
-                        .orElse(null),
-                null);
+        if (request.getCookies() == null) {
+            return null;
+        } else {
+            return Arrays
+                    .stream(request.getCookies())
+                    .filter(c -> c.getName().equals(encode(name))).findAny()
+                    .map(cookie -> decode(cookie.getValue()))
+                    .orElse(null);
+        }
     }
 
     /**

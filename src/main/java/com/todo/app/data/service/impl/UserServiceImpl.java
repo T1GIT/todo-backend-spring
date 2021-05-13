@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.saveAndFlush(
                 userRepository.findByEmail(user.getEmail()).map(foundUser -> {
                     if (!Hash.check(user.getPsw(), foundUser.getPsw()))
-                        throw new IncorrectPswException(user.getEmail(), user.getPsw());
+                        throw new IncorrectPswException(user.getEmail());
                     return foundUser;
                 }).orElseThrow(() -> new EmailNotExistsException(user.getEmail())));
     }

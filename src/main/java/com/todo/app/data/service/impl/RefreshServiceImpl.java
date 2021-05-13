@@ -1,6 +1,5 @@
 package com.todo.app.data.service.impl;
 
-import com.todo.app.data.model.Category;
 import com.todo.app.data.model.Refresh;
 import com.todo.app.data.model.User;
 import com.todo.app.data.repo.RefreshRepository;
@@ -8,7 +7,7 @@ import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.service.RefreshService;
 import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.security.KeyGenerator;
-import com.todo.app.security.util.enums.SecretLength;
+import com.todo.app.security.util.enums.KeyLength;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -26,15 +25,14 @@ public class RefreshServiceImpl implements RefreshService {
         this.userRepository = userRepository;
     }
 
-
     @Override
     public Refresh create(long userId) throws ResourceNotFoundException {
         return refreshRepository.saveAndFlush(
                 userRepository.findById(userId).map(user ->
-                        new Refresh() {{
-                            setValue(genValue());
-                            user.addRefresh(this);
-                        }}
+                        new Refresh().edit(r -> {
+                            r.setValue(genValue());
+                            user.addRefresh(r);
+                        })
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }
 
@@ -54,8 +52,9 @@ public class RefreshServiceImpl implements RefreshService {
     private String genValue() {
         String value;
         do {
-            value = KeyGenerator.string(SecretLength.REFRESH);
+            value = KeyGenerator.string(KeyLength.REFRESH);
         } while (refreshRepository.existsByValue(value));
+
         return value;
     }
 }

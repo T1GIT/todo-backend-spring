@@ -33,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestPropertySource("classpath:application_test.properties")
 @EnableTransactionManagement
 @EnableAutoConfiguration
-@Transactional
 class TaskServiceTest {
 
     static User user;
@@ -50,9 +49,10 @@ class TaskServiceTest {
                 .edit(u -> {
                     u.setEmail("example@email.com");
                     u.setPsw("some password");
+                    category = new Category()
+                            .edit(c -> c.setName("category"));
+                    u.addCategory(category);
                 }));
-        category = categoryService.add(user.getId(), new Category()
-                .edit(c -> c.setName("category")));
     }
 
     @AfterEach
@@ -63,7 +63,7 @@ class TaskServiceTest {
     @Test
     void getOf() {
         insertTasks(category.getId(), 10);
-        List<Task> tasks = taskService.getOf(category.getId());
+        List<Task> tasks = taskService.getOf(user.getId(), category.getId());
         List<Task> sortedTasks = new ArrayList<>(tasks);
         sortedTasks.sort((c1, c2) -> String.CASE_INSENSITIVE_ORDER.compare(c1.getTitle(), c2.getTitle()));
         assertEquals(sortedTasks, tasks);
@@ -75,7 +75,7 @@ class TaskServiceTest {
     void add() {
         int amount = 100;
         insertTasks(category.getId(), amount);
-        List<Task> tasks = taskService.getOf(category.getId());
+        List<Task> tasks = taskService.getOf(user.getId(), category.getId());
         assertEquals(amount, tasks.size());
         for (Task task: tasks)
             assertEquals(title, task.getTitle());
@@ -86,16 +86,15 @@ class TaskServiceTest {
     void edit() {
         String title = "some new title";
         String desc = "some description";
-        Date date = new Date();
         int amount = 100;
         insertTasks(category.getId(), amount);
-        for (Task task: taskService.getOf(category.getId())) {
-            taskService.update(task.getId(), new Task().edit(t -> {
+        for (Task task: taskService.getOf(user.getId(), category.getId())) {
+            taskService.update(user.getId(), task.getId(), new Task().edit(t -> {
                 t.setTitle(title);
                 t.setDescription(desc);
             }));
         }
-        List<Task> tasks = taskService.getOf(category.getId());
+        List<Task> tasks = taskService.getOf(user.getId(), category.getId());
         assertEquals(amount, tasks.size());
         for (Task task: tasks) {
             assertEquals(title, task.getTitle());
@@ -106,11 +105,13 @@ class TaskServiceTest {
 
     @Test
     void delete() {
-        Task task = taskService.add(category.getId(), new Task()
+
+        Category category = categoryService.add(user.getId(), new Category()
+                .edit(c -> c.setName("category")));
+        Task task = taskService.add(user.getId(), category.getId(), new Task()
                 .edit(c -> c.setTitle(title)));
-        taskService.delete(task.getId());
-        assertDoesNotThrow(
-                () -> taskService.delete(task.getId()));
+        taskService.delete(user.getId(), task.getId());
+        assertDoesNotThrow(() -> taskService.delete(user.getId(), task.getId()));
     }
 
     @Test
@@ -118,13 +119,13 @@ class TaskServiceTest {
         int amount = 100;
         insertTasks(category.getId(), amount);
         for (int i = 0; i < amount; i++) {
-            taskService.getOf(category.getId());
+            taskService.getOf(user.getId(), category.getId());
         }
     }
 
     private void insertTasks(long categoryId, int amount) {
         for (int i = 0; i < amount; i++) {
-            taskService.add(categoryId, new Task()
+            taskService.add(user.getId(), categoryId, new Task()
                     .edit(t -> t.setTitle(title)));
         }
     }

@@ -44,10 +44,8 @@ public class SecurityFilter extends OncePerRequestFilter {
             try {
                 String refreshCookie = RefreshProvider.extract(request);
                 Refresh refresh = refreshService.update(refreshCookie);
-                Auth user = (Auth) refresh.getUser();
                 RefreshProvider.attach(response, refresh.getValue());
-                JwtProvider.attach(response, user);
-                SecurityContextHolder.getContext().setAuthentication(user);
+                JwtProvider.attach(response, (Auth) refresh.getUser());
             } catch (MissedRefreshException | ResourceNotFoundException e) {
                 RefreshProvider.erase(response);
                 JwtProvider.erase(response);

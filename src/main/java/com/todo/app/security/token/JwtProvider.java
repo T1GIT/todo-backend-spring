@@ -3,12 +3,10 @@ package com.todo.app.security.token;
 import com.todo.app.api.util.CookieUtil;
 import com.todo.app.security.Auth;
 import com.todo.app.security.KeyGenerator;
-import com.todo.app.security.util.enums.SecretLength;
+import com.todo.app.security.util.enums.KeyLength;
 import com.todo.app.security.util.exception.MissedJwtException;
-import com.todo.app.security.util.exception.MissedRefreshException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +20,7 @@ public abstract class JwtProvider {
     private final static Duration DURATION = Duration.ofHours(1);
     private final static String TOKEN_NAME = "JWT";
 
-    private final static Key KEY = Keys.hmacShaKeyFor(KeyGenerator.bytes(SecretLength.JWT_KEY));
+    private final static Key KEY = Keys.hmacShaKeyFor(KeyGenerator.bytes(KeyLength.JWT_KEY));
 
     public static String stringify(Auth user) {
         return Jwts.builder()

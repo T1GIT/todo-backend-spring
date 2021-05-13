@@ -44,8 +44,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value = "/user/psw", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User changePsw(
-            @RequestBody User requestUser) {
+    public User changePsw(@RequestBody User requestUser) {
         if (!Validator.psw(requestUser.getPsw()))
             throw new InvalidPswException(requestUser.getPsw());
         Auth authUser = (Auth) SecurityContextHolder.getContext().getAuthentication();

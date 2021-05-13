@@ -82,7 +82,7 @@ class CategoryServiceTest {
         user.getCategories().forEach(user::removeCategory);
         insertCategories(user.getId(), amount);
         for (Category category: categoryService.getOf(user.getId()))
-            categoryService.changeName(category.getId(), newName);
+            categoryService.changeName(user.getId(), category.getId(), newName);
         List<Category> categories = categoryService.getOf(user.getId());
         assertEquals(amount, categories.size());
         for (Category category: categories)
@@ -94,9 +94,8 @@ class CategoryServiceTest {
     void delete() {
         Category category = categoryService.add(user.getId(), new Category()
             .edit(c -> c.setName(name)));
-        categoryService.delete(category.getId());
-        assertDoesNotThrow(
-                () -> categoryService.delete(category.getId()));
+        categoryService.delete(user.getId(), category.getId());
+        assertDoesNotThrow(() -> categoryService.delete(user.getId(), category.getId()));
     }
 
     @Test

@@ -29,7 +29,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getOf(long categoryId) {
+    public List<Task> getOf(long userId, long categoryId) {
         return categoryRepository.findById(categoryId).map(category -> {
             List<Task> taskList = new ArrayList<>(category.getTasks());
             taskList.sort(Comparator.comparingLong(AbstractModel::getId));
@@ -38,42 +38,52 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task add(long categoryId, Task task) {
+    public Task add(long userId, long categoryId, Task task) {
         return taskRepository.saveAndFlush(
-            categoryRepository.findById(categoryId).map(category ->
+            categoryRepository.findByUserIdAndId(userId, categoryId).map(category ->
                     task.edit(category::addTask)
             ).orElseThrow(() -> new ResourceNotFoundException(Category.class, categoryId)));
     }
 
     @Override
-    public Task update(long taskId, Task newTask) {
+    public Task update(long userId, long taskId, Task newTask) {
         return taskRepository.saveAndFlush(
-                taskRepository.findById(taskId).map(task ->
-                        task.edit(t -> {
-                            t.setTitle(newTask.getTitle());
-                            t.setDescription(newTask.getDescription());
-                        })
-                ).orElseThrow(() -> new ResourceNotFoundException(Task.class, taskId)));
+                taskRepository.findById(taskId).map(task -> {
+                    if (!categoryRepository.existsByUserIdAndId(userId, task.getCategory().getId()))
+                        throw new ResourceNotFoundException(Category.class, "taskId", taskId);
+                    return task.edit(t -> {
+                        t.setTitle(newTask.getTitle());
+                        t.setDescription(newTask.getDescription());
+                    });
+                }).orElseThrow(() -> new ResourceNotFoundException(Task.class, taskId))
+        );
     }
 
     @Override
-    public Task setCompleted(long taskId, boolean isCompleted) throws ResourceNotFoundException {
+    public Task setCompleted(long userId, long taskId, boolean isCompleted) throws ResourceNotFoundException {
         return taskRepository.saveAndFlush(
-                taskRepository.findById(taskId).map(task ->
-                        task.edit(t -> {
-                            if (isCompleted) {
-                                t.setCompleted(true);
-                                t.setExecuteDate(new Date());
-                            } else {
-                                t.setCompleted(false);
-                                t.setExecuteDate(null);
-                            }
-                        })
-                ).orElseThrow(() -> new ResourceNotFoundException(Task.class, taskId)));
+                taskRepository.findById(taskId).map(task -> {
+                    if (!categoryRepository.existsByUserIdAndId(userId, task.getCategory().getId()))
+                        throw new ResourceNotFoundException(Category.class, "taskId", taskId);
+                    return task.edit(t -> {
+                        if (isCompleted) {
+                            t.setCompleted(true);
+                            t.setExecuteDate(new Date());
+                        } else {
+                            t.setCompleted(false);
+                            t.setExecuteDate(null);
+                        }
+                    });
+                }).orElseThrow(() -> new ResourceNotFoundException(Task.class, taskId))
+        );
     }
 
     @Override
-    public void delete(long taskId) {
-        taskRepository.findById(taskId).ifPresent(taskRepository::delete);
+    public void delete(long userId, long taskId) {
+        taskRepository.findById(taskId).ifPresent(task -> {
+            if (!categoryRepository.existsByUserIdAndId(userId, task.getCategory().getId()))
+                throw new ResourceNotFoundException(Category.class, "taskId", taskId);
+            taskRepository.delete(task);
+        });
     }
 }

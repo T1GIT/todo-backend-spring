@@ -39,11 +39,7 @@ class UserServiceTest {
     static String psw = "some password";
     static String name = "some user name";
 
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    UserRepository userRepository;
+    @Autowired UserService userService;
 
     @BeforeEach
     void beforeEach() {

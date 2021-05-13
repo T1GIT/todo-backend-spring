@@ -9,13 +9,13 @@ import java.util.List;
 
 public interface TaskService {
 
-    List<Task> getOf(long categoryId) throws ResourceNotFoundException;
+    List<Task> getOf(long userId, long categoryId) throws ResourceNotFoundException;
 
-    Task add(long categoryId, Task task) throws ResourceNotFoundException;
+    Task add(long userId, long categoryId, Task task) throws ResourceNotFoundException;
 
-    Task update(long taskId, Task newTask) throws ResourceNotFoundException;
+    Task update(long userId, long taskId, Task newTask) throws ResourceNotFoundException;
 
-    Task setCompleted(long taskId, boolean isCompleted) throws ResourceNotFoundException;
+    Task setCompleted(long userId, long taskId, boolean isCompleted) throws ResourceNotFoundException;
 
-    void delete(long taskId);
+    void delete(long userId, long taskId);
 }

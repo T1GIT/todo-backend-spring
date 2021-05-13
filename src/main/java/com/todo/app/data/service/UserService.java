@@ -16,7 +16,7 @@ public interface UserService {
 
     User changeEmail(long userId, String newEmail) throws EmailExistsException, ResourceNotFoundException;
 
-    User changePsw(long userId, String psw) throws ResourceNotFoundException;
+    User changePsw(long userId, String newPsw) throws ResourceNotFoundException;
 
     User update(long userId, User newUser) throws ResourceNotFoundException;
 
