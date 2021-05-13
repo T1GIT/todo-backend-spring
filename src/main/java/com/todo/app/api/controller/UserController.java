@@ -5,6 +5,7 @@ import com.todo.app.api.controller.util.exception.InvalidEmailException;
 import com.todo.app.api.controller.util.exception.InvalidPswException;
 import com.todo.app.data.model.User;
 import com.todo.app.data.service.UserService;
+import com.todo.app.security.Auth;
 import com.todo.app.security.Validator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -13,6 +14,7 @@ import io.swagger.annotations.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -31,37 +33,37 @@ public class UserController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping(value = "/user/{userId}/email", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/user/email", produces = MediaType.APPLICATION_JSON_VALUE)
     public User changeEmail(
-            @PathVariable long userId,
-            @RequestBody User user) {
-        if (!Validator.email(user.getEmail()))
-            throw new InvalidEmailException(user.getEmail());
-        return userService.changeEmail(userId, user.getEmail());
+            @RequestBody User requestUser) {
+        if (!Validator.email(requestUser.getEmail()))
+            throw new InvalidEmailException(requestUser.getEmail());
+        Auth authUser = (Auth) SecurityContextHolder.getContext().getAuthentication();
+        return userService.changeEmail(authUser.getId(), requestUser.getEmail());
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping(value = "/user/{userId}/psw", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/user/psw", produces = MediaType.APPLICATION_JSON_VALUE)
     public User changePsw(
-            @PathVariable long userId,
-            @RequestBody User user) {
-        if (!Validator.psw(user.getPsw()))
-            throw new InvalidPswException(user.getPsw());
-        return userService.changePsw(userId, user.getPsw());
+            @RequestBody User requestUser) {
+        if (!Validator.psw(requestUser.getPsw()))
+            throw new InvalidPswException(requestUser.getPsw());
+        Auth authUser = (Auth) SecurityContextHolder.getContext().getAuthentication();
+        return userService.changePsw(authUser.getId(), requestUser.getPsw());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping(value = "/user/{userId}")
+    @PutMapping(value = "/user")
     public void updateUser(
-            @PathVariable long userId,
-            @RequestBody User user) {
-        userService.update(userId, user);
+            @RequestBody User requestUser) {
+        Auth authUser = (Auth) SecurityContextHolder.getContext().getAuthentication();
+        userService.update(authUser.getId(), requestUser);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/user/{userId}")
-    public void deleteUser(
-            @PathVariable long userId) {
-        userService.delete(userId);
+    @DeleteMapping("/user")
+    public void deleteUser() {
+        Auth authUser = (Auth) SecurityContextHolder.getContext().getAuthentication();
+        userService.delete(authUser.getId());
     }
 }

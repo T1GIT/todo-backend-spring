@@ -10,9 +10,7 @@ import java.util.Optional;
 @Repository
 public interface RefreshRepository extends JpaRepository<Refresh, Long> {
 
-    Optional<Refresh> findByUserIdAndValue(long userId, String value);
-
-    boolean existsByUserIdAndValue(long userId, String value);
+    Optional<Refresh> findByValue(String value);
 
     boolean existsByValue(String value);
 

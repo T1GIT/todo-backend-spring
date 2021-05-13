@@ -1,5 +1,6 @@
 package com.todo.app.security;
 
+import com.todo.app.security.token.JwtProvider;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -8,10 +9,10 @@ import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class JwtParserTest {
+class JwtProviderTest {
 
     static Auth user = Auth.fromMap(new HashMap<>() {{
-        put("id", Integer.MAX_VALUE + 1);
+        put("id", Integer.MAX_VALUE);
         put("email", "example@mail.ru");
         put("name", "name");
         put("surname", "surname");
@@ -21,12 +22,12 @@ class JwtParserTest {
 
     @Test
     void stringify() {
-        System.out.println(JwtParser.stringify(user));
+        System.out.println(JwtProvider.stringify(user));
     }
 
     @Test
     void parse() {
-        Auth parsedUser = JwtParser.parse(JwtParser.stringify(user));
+        Auth parsedUser = JwtProvider.parse(JwtProvider.stringify(user));
         assertEquals(user.getId(), parsedUser.getId());
         assertEquals(user.getName(), parsedUser.getName());
         assertEquals(user.getSurname(), parsedUser.getSurname());
@@ -38,14 +39,14 @@ class JwtParserTest {
     void speedTest() {
         int amount = 50;
         int seconds = 1;
-        String jwt = JwtParser.stringify(user);
+        String jwt = JwtProvider.stringify(user);
         assertTimeout(Duration.ofSeconds(seconds), () -> {
             for (int i = 0; i < amount; i++)
-                JwtParser.parse(jwt);
+                JwtProvider.parse(jwt);
         });
         assertTimeout(Duration.ofSeconds(seconds), () -> {
             for (int i = 0; i < amount; i++)
-                JwtParser.stringify(user);
+                JwtProvider.stringify(user);
         });
     }
 }

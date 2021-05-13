@@ -7,9 +7,7 @@ public interface RefreshService {
 
     Refresh create(long userId) throws ResourceNotFoundException;
 
-    boolean exists(long userId, String value) throws ResourceNotFoundException;
+    Refresh update(String value) throws ResourceNotFoundException;
 
-    Refresh update(long userId, String value) throws ResourceNotFoundException;
-
-    void delete(long userId, String value) throws ResourceNotFoundException;
+    void delete(String value) throws ResourceNotFoundException;
 }

@@ -8,6 +8,7 @@ import com.todo.app.data.model.User;
 import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.service.UserService;
 import com.todo.app.security.Hash;
+import com.todo.app.security.util.enums.Role;
 import com.todo.app.security.util.exception.IncorrectPswException;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +33,8 @@ public class UserServiceImpl implements UserService {
                 user.edit(u -> {
                     u.setEmail(user.getEmail());
                     u.setPsw(Hash.hash(user.getPsw()));
-                    u.addCategory(
-                            new Category().edit(c -> c.setName("Задачи")));
+                    u.addCategory(new Category() {{ setName("Задачи"); }});
+                    u.setRole(Role.BASIC);
                 }));
     }
 
@@ -81,7 +82,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(long userId) {
-        if (userRepository.existsById(userId))
-            userRepository.deleteById(userId);
+        userRepository.findById(userId).ifPresent(userRepository::delete);
     }
 }

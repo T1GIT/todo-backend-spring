@@ -53,7 +53,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(long categoryId) {
-        if (categoryRepository.existsById(categoryId))
-            categoryRepository.deleteById(categoryId);
+        categoryRepository.findById(categoryId).ifPresent(categoryRepository::delete);
     }
 }

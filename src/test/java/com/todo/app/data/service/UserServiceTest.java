@@ -2,6 +2,7 @@ package com.todo.app.data.service;
 
 import com.todo.app.TodoApplication;
 import com.todo.app.data.model.Task;
+import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.User;
 import org.junit.jupiter.api.AfterEach;
@@ -40,6 +41,9 @@ class UserServiceTest {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    UserRepository userRepository;
 
     @BeforeEach
     void beforeEach() {

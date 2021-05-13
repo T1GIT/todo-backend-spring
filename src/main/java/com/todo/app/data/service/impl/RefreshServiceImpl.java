@@ -39,30 +39,16 @@ public class RefreshServiceImpl implements RefreshService {
     }
 
     @Override
-    public boolean exists(long userId, String value) throws ResourceNotFoundException {
-        return userRepository.findById(userId).map(user ->
-                user.getRefreshes().stream()
-                        .anyMatch(r -> r.getValue().equals(value))
-        ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId));
+    public Refresh update(String value) throws ResourceNotFoundException {
+        return refreshRepository.saveAndFlush(
+                refreshRepository.findByValue(value).map(refresh ->
+                        refresh.edit(r -> r.setValue(genValue()))
+                ).orElseThrow(() -> new ResourceNotFoundException(Refresh.class, "value", value)));
     }
 
     @Override
-    public Refresh update(long userId, String value) throws ResourceNotFoundException {
-        return refreshRepository.saveAndFlush(userRepository.findById(userId).map(user ->
-                user.getRefreshes().stream()
-                        .filter(r -> r.getValue().equals(value)).findAny().map(
-                                refresh -> refresh.edit(r -> r.setValue(genValue()))
-                ).orElseThrow(() -> new ResourceNotFoundException(Refresh.class, "value", value))
-        ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
-    }
-
-    @Override
-    public void delete(long userId, String value) throws ResourceNotFoundException {
-        userRepository.findById(userId).map(user -> user.getRefreshes().stream()
-                .filter(r -> r.getValue().equals(value)).findAny().map(refresh ->
-                        userRepository.saveAndFlush(
-                                user.edit(u -> u.removeRefresh(refresh))))
-        ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId));
+    public void delete(String value) throws ResourceNotFoundException {
+        refreshRepository.findByValue(value).ifPresent(refreshRepository::delete);
     }
 
     private String genValue() {

@@ -74,7 +74,6 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void delete(long taskId) {
-        if (taskRepository.existsById(taskId))
-            taskRepository.deleteById(taskId);
+        taskRepository.findById(taskId).ifPresent(taskRepository::delete);
     }
 }

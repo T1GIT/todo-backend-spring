@@ -1,5 +1,8 @@
 package com.todo.app.api.util;
 
+import com.todo.app.TodoApplication;
+import org.springframework.boot.context.config.ConfigData;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,9 +67,13 @@ public abstract class CookieUtil {
      * @param expiresIn life time of the cookie in seconds
      */
     public static void add(HttpServletResponse response, String name, Object value, long expiresIn) {
-        Cookie cookie = new Cookie(encode(name), encode(String.valueOf(value)));
-        cookie.setMaxAge((int) expiresIn);
-        response.addCookie(cookie);
+        response.addCookie(
+                new Cookie(encode(name), encode(String.valueOf(value))) {{
+                    setHttpOnly(true);
+                    setMaxAge((int) expiresIn);
+                    setDomain(TodoApplication.DOMAIN);
+                    setPath("/");
+        }});
     }
 
     /**

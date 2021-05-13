@@ -20,13 +20,13 @@ public abstract class AuditModel<T extends AuditModel<T>> extends AbstractModel<
     @JsonIgnore
     @CreatedDate
     @Column(name = "createdAt", nullable = false, updatable = false)
-    private Date createdAt;
+    protected Date createdAt = new Date();
 
 
     @JsonIgnore
     @LastModifiedDate
     @Column(name = "updatedAt", nullable = false)
-    private Date updatedAt;
+    protected Date updatedAt = new Date();
 
     public AuditModel() {
         super();
