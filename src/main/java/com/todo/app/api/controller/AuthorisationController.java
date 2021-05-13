@@ -6,7 +6,6 @@ import com.todo.app.data.model.Refresh;
 import com.todo.app.data.model.User;
 import com.todo.app.data.service.RefreshService;
 import com.todo.app.data.service.UserService;
-import com.todo.app.security.Auth;
 import com.todo.app.security.Validator;
 import com.todo.app.security.token.JwtProvider;
 import com.todo.app.security.token.RefreshProvider;
@@ -21,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 @Api(tags = "Authorisation controller",
         description = "Controller to provide authorisation process")
 @RestController
+@RequestMapping("/authorisation")
 public class AuthorisationController {
 
     private final UserService userService;
@@ -32,7 +32,7 @@ public class AuthorisationController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "/authorisation/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public User register(@RequestBody User user, HttpServletResponse response) {
         if (!Validator.email(user.getEmail()))
             throw new InvalidEmailException(user.getEmail());
@@ -40,13 +40,13 @@ public class AuthorisationController {
             throw new InvalidPswException(user.getPsw());
         user = userService.register(user);
         Refresh refresh = refreshService.create(user.getId());
-        JwtProvider.attach(response, (Auth) user);
+        JwtProvider.attach(response, user);
         RefreshProvider.attach(response, refresh.getValue());
         return user;
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping(value = "/authorisation/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public User login(@RequestBody User user, HttpServletResponse response) {
         if (!Validator.email(user.getEmail()))
             throw new InvalidEmailException(user.getEmail());
@@ -54,14 +54,14 @@ public class AuthorisationController {
             throw new InvalidPswException(user.getPsw());
         user = userService.login(user);
         Refresh refresh = refreshService.create(user.getId());
-        JwtProvider.attach(response, (Auth) user);
+        JwtProvider.attach(response, user);
         RefreshProvider.attach(response, refresh.getValue());
         return user;
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PostMapping(value = "/authorisation/logout")
-    public void logout(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+    @PostMapping(value = "/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
         String refreshCookie = RefreshProvider.extract(request);
         refreshService.delete(refreshCookie);
         JwtProvider.erase(response);

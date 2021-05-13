@@ -6,8 +6,9 @@ import com.todo.app.data.repo.RefreshRepository;
 import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.service.RefreshService;
 import com.todo.app.data.util.exception.ResourceNotFoundException;
-import com.todo.app.security.KeyGenerator;
+import com.todo.app.security.crypt.KeyGenerator;
 import com.todo.app.security.util.enums.KeyLength;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -40,7 +41,10 @@ public class RefreshServiceImpl implements RefreshService {
     public Refresh update(String value) throws ResourceNotFoundException {
         return refreshRepository.saveAndFlush(
                 refreshRepository.findByValue(value).map(refresh ->
-                        refresh.edit(r -> r.setValue(genValue()))
+                        refresh.edit(r -> {
+                            r.setValue(genValue());
+                            r.setUser(Hibernate.unproxy(r.getUser(), User.class));
+                        })
                 ).orElseThrow(() -> new ResourceNotFoundException(Refresh.class, "value", value)));
     }
 
@@ -54,7 +58,6 @@ public class RefreshServiceImpl implements RefreshService {
         do {
             value = KeyGenerator.string(KeyLength.REFRESH);
         } while (refreshRepository.existsByValue(value));
-
         return value;
     }
 }

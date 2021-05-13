@@ -44,7 +44,7 @@ public class User extends AuditModel<User> {
 
     @JsonIgnore
     @Enumerated(EnumType.STRING)
-    private Role role = Role.BASIC;
+    protected Role role = Role.BASIC;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

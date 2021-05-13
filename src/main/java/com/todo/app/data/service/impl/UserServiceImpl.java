@@ -7,7 +7,7 @@ import com.todo.app.data.model.Category;
 import com.todo.app.data.model.User;
 import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.service.UserService;
-import com.todo.app.security.Hash;
+import com.todo.app.security.crypt.Hash;
 import com.todo.app.security.util.enums.Role;
 import com.todo.app.security.util.exception.IncorrectPswException;
 import org.springframework.stereotype.Service;

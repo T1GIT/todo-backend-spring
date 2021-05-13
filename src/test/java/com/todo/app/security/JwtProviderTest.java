@@ -1,5 +1,6 @@
 package com.todo.app.security;
 
+import com.todo.app.security.auth.AuthUser;
 import com.todo.app.security.token.JwtProvider;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JwtProviderTest {
 
-    static Auth user = Auth.fromMap(new HashMap<>() {{
+    static AuthUser user = AuthUser.fromMap(new HashMap<>() {{
         put("id", Integer.MAX_VALUE);
         put("email", "example@mail.ru");
         put("name", "name");
@@ -27,7 +28,7 @@ class JwtProviderTest {
 
     @Test
     void parse() {
-        Auth parsedUser = JwtProvider.parse(JwtProvider.stringify(user));
+        AuthUser parsedUser = JwtProvider.parse(JwtProvider.stringify(user));
         assertEquals(user.getId(), parsedUser.getId());
         assertEquals(user.getName(), parsedUser.getName());
         assertEquals(user.getSurname(), parsedUser.getSurname());

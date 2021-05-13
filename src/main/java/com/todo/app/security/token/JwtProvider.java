@@ -1,8 +1,9 @@
 package com.todo.app.security.token;
 
 import com.todo.app.api.util.CookieUtil;
-import com.todo.app.security.Auth;
-import com.todo.app.security.KeyGenerator;
+import com.todo.app.data.model.User;
+import com.todo.app.security.auth.AuthUser;
+import com.todo.app.security.crypt.KeyGenerator;
 import com.todo.app.security.util.enums.KeyLength;
 import com.todo.app.security.util.exception.MissedJwtException;
 import io.jsonwebtoken.*;
@@ -22,16 +23,16 @@ public abstract class JwtProvider {
 
     private final static Key KEY = Keys.hmacShaKeyFor(KeyGenerator.bytes(KeyLength.JWT_KEY));
 
-    public static String stringify(Auth user) {
+    public static String stringify(User user) {
         return Jwts.builder()
-                .setClaims(Auth.toMap(user))
+                .setClaims(AuthUser.toMap(user))
                 .setExpiration(new Date(System.currentTimeMillis() + DURATION.toMillis()))
                 .signWith(KEY)
                 .compact();
     }
 
-    public static Auth parse(String jwt) throws JwtException {
-        return Auth.fromMap(
+    public static AuthUser parse(String jwt) throws JwtException {
+        return AuthUser.fromMap(
                 Jwts.parserBuilder()
                         .setSigningKey(KEY)
                         .build()
@@ -39,11 +40,11 @@ public abstract class JwtProvider {
                         .getBody());
     }
 
-    public static void attach(HttpServletResponse response, Auth user) {
+    public static void attach(HttpServletResponse response, User user) {
         CookieUtil.add(response, TOKEN_NAME, stringify(user), DURATION.getSeconds());
     }
 
-    public static Auth extract(HttpServletRequest request) throws JwtException, MissedJwtException {
+    public static AuthUser extract(HttpServletRequest request) throws JwtException, MissedJwtException {
         String jwt = CookieUtil.get(request, TOKEN_NAME);
         if (jwt == null)
             throw new MissedJwtException();

@@ -1,5 +1,6 @@
 package com.todo.app.security;
 
+import com.todo.app.security.crypt.Hash;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
