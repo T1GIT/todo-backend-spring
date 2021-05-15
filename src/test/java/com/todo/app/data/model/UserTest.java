@@ -51,7 +51,7 @@ class UserTest {
     }};
 
     @Test
-    void hashCodeTest() {
+    void equalsTest() {
         assertEquals(user, sameUser);
         assertNotEquals(user, almostSameUser);
         assertNotEquals(user, anotherUser);
