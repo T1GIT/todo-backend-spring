@@ -7,6 +7,7 @@ import com.todo.app.data.repo.CategoryRepository;
 import com.todo.app.data.repo.TaskRepository;
 import com.todo.app.data.service.TaskService;
 import com.todo.app.data.util.base.AbstractModel;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -16,17 +17,13 @@ import java.util.Date;
 import java.util.List;
 
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class TaskServiceImpl implements TaskService {
 
     private final CategoryRepository categoryRepository;
     private final TaskRepository taskRepository;
-
-    public TaskServiceImpl(CategoryRepository categoryRepository, TaskRepository taskRepository) {
-        this.categoryRepository = categoryRepository;
-        this.taskRepository = taskRepository;
-    }
 
     @Override
     public List<Task> getOf(long userId, long categoryId) {

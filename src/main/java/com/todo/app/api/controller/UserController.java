@@ -8,6 +8,7 @@ import com.todo.app.security.auth.AuthContext;
 import com.todo.app.security.Validator;
 import com.todo.app.security.token.RefreshProvider;
 import io.swagger.annotations.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -17,17 +18,13 @@ import javax.servlet.http.HttpServletResponse;
 
 @Api(tags = "User controller",
         description = "Provides operations with user models")
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
     private final AuthContext authContext;
-
-    public UserController(UserService userService, AuthContext authContext) {
-        this.userService = userService;
-        this.authContext = authContext;
-    }
 
     @ApiOperation("Validates and changes user email address")
     @ResponseStatus(HttpStatus.NO_CONTENT)

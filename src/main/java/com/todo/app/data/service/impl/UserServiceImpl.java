@@ -10,20 +10,18 @@ import com.todo.app.data.service.UserService;
 import com.todo.app.security.crypt.Hash;
 import com.todo.app.security.util.enums.Role;
 import com.todo.app.security.util.exception.IncorrectPswException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
 
+@RequiredArgsConstructor
 @Transactional
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public User register(User user) throws EmailExistsException {

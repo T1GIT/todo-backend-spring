@@ -1,6 +1,7 @@
 package com.todo.app.data.service;
 
 import com.todo.app.TodoApplication;
+import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.Category;
 import com.todo.app.data.model.User;
@@ -23,11 +24,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = TodoApplication.class)
+@SpringBootTest(classes = TodoApplication.class)
 @RunWith(SpringRunner.class)
-@AutoConfigureMockMvc
 @TestPropertySource("classpath:application_test.properties")
 @EnableTransactionManagement
 @EnableAutoConfiguration
@@ -39,6 +37,7 @@ class CategoryServiceTest {
 
     @Autowired UserService userService;
     @Autowired CategoryService categoryService;
+    @Autowired UserRepository userRepository;
 
     @BeforeEach
     void beforeEach() {

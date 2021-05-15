@@ -1,8 +1,7 @@
 package com.todo.app.data.service;
 
 import com.todo.app.TodoApplication;
-import com.todo.app.data.model.Category;
-import com.todo.app.data.model.Refresh;
+import com.todo.app.data.model.Session;
 import com.todo.app.data.model.User;
 import com.todo.app.security.util.enums.KeyLength;
 import org.junit.jupiter.api.AfterEach;
@@ -31,12 +30,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @EnableTransactionManagement
 @EnableAutoConfiguration
 @Transactional
-class RefreshServiceTest {
+class SessionServiceTest {
 
     static User user;
+    static String fingerprint = "f".repeat(32);
 
     @Autowired UserService userService;
-    @Autowired RefreshService refreshService;
+    @Autowired
+    SessionService sessionService;
 
     @BeforeEach
     void beforeEach() {
@@ -53,25 +54,25 @@ class RefreshServiceTest {
 
     @Test
     void create() {
-        Refresh refresh = refreshService.create(user.getId());
-        System.out.println(refresh);
-        assertNotNull(refresh);
-        assertEquals(KeyLength.REFRESH.getLength(), refresh.getValue().length());
+        Session session = sessionService.create(user.getId(), fingerprint);
+        System.out.println(session);
+        assertNotNull(session);
+        assertEquals(KeyLength.REFRESH.getLength(), session.getRefresh().length());
     }
 
     @Test
     void update() {
-        Refresh refresh = refreshService.create(user.getId());
-        String oldValue = refresh.getValue();
-        Refresh newRefresh = refreshService.update(refresh.getValue());
-        assertNotEquals(oldValue, newRefresh.getValue());
-        assertEquals(KeyLength.REFRESH.getLength(), newRefresh.getValue().length());
+        Session session = sessionService.create(user.getId(), fingerprint);
+        String oldValue = session.getRefresh();
+        Session newSession = sessionService.update(session.getRefresh(), fingerprint);
+        assertNotEquals(oldValue, newSession.getRefresh());
+        assertEquals(KeyLength.REFRESH.getLength(), newSession.getRefresh().length());
     }
 
     @Test
     void delete() {
-        Refresh refresh = refreshService.create(user.getId());
-        refreshService.delete(refresh.getValue());
-        assertDoesNotThrow(() -> refreshService.delete(refresh.getValue()));
+        Session session = sessionService.create(user.getId(), fingerprint);
+        sessionService.delete(session.getRefresh());
+        assertDoesNotThrow(() -> sessionService.delete(session.getRefresh()));
     }
 }

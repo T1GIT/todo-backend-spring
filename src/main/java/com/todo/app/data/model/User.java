@@ -7,20 +7,17 @@ import com.todo.app.data.util.base.AuditModel;
 import com.todo.app.security.util.enums.Role;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiResponse;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.*;
 
 
+@ApiModel
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel
 @Entity
 @Table(name = "users")
 @JsonIgnoreProperties(value = "psw", allowSetters = true)
@@ -58,19 +55,21 @@ public class User extends AuditModel<User> {
     @ApiModelProperty(position = 5, example = "2020-12-31")
     protected Date birthdate;
 
-    @ApiModelProperty(accessMode = ApiModelProperty.AccessMode.READ_ONLY, position = 6)
+    @ApiModelProperty(position = 6, example = "ADMIN")
     @Enumerated(EnumType.STRING)
     protected Role role = Role.BASIC;
 
     @JsonIgnore
     @Setter(AccessLevel.NONE)
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Category> categories = new HashSet<>();
     
     @JsonIgnore
     @Setter(AccessLevel.NONE)
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final Set<Refresh> refreshes = new HashSet<>();
+    private final Set<Session> sessions = new HashSet<>();
 
     public void addCategory(Category category) {
         this.categories.add(category);
@@ -82,13 +81,13 @@ public class User extends AuditModel<User> {
         category.setUser(null);
     }
 
-    public void addRefresh(Refresh refresh) {
-        this.refreshes.add(refresh);
-        refresh.setUser(this);
+    public void addSession(Session session) {
+        this.sessions.add(session);
+        session.setUser(this);
     }
 
-    public void removeRefresh(Refresh refresh) {
-        this.refreshes.remove(refresh);
-        refresh.setUser(null);
+    public void removeSession(Session session) {
+        this.sessions.remove(session);
+        session.setUser(null);
     }
 }

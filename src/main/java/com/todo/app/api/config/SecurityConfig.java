@@ -2,6 +2,7 @@ package com.todo.app.api.config;
 
 import com.todo.app.api.filter.SecurityFilter;
 import com.todo.app.security.util.enums.Role;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
@@ -16,15 +17,12 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final SecurityFilter securityFilter;
-
-    public SecurityConfig(SecurityFilter securityFilter) {
-        this.securityFilter = securityFilter;
-    }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {

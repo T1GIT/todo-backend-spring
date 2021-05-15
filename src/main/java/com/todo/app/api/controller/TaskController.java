@@ -4,6 +4,7 @@ import com.todo.app.data.model.Task;
 import com.todo.app.data.service.TaskService;
 import com.todo.app.security.auth.AuthContext;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -13,17 +14,13 @@ import java.util.List;
 
 @Api(tags = "Task controller",
         description = "Controller to provide operations with task models")
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/todo")
 public class TaskController {
 
     private final TaskService taskService;
     private final AuthContext authContext;
-
-    public TaskController(TaskService taskService, AuthContext authContext) {
-        this.taskService = taskService;
-        this.authContext = authContext;
-    }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/category/{categoryId}/tasks", produces = MediaType.APPLICATION_JSON_VALUE)

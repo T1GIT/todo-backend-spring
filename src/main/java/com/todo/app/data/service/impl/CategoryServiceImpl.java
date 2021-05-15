@@ -6,6 +6,7 @@ import com.todo.app.data.model.User;
 import com.todo.app.data.repo.CategoryRepository;
 import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.service.CategoryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -13,17 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
-
-    public CategoryServiceImpl(CategoryRepository categoryRepository, UserRepository userRepository) {
-        this.categoryRepository = categoryRepository;
-        this.userRepository = userRepository;
-    }
 
     @Override
     public List<Category> getOf(long userId) throws ResourceNotFoundException {

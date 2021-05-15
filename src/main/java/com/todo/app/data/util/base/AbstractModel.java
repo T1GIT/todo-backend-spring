@@ -13,10 +13,9 @@ import java.util.function.Consumer;
 @Data
 @NoArgsConstructor
 @MappedSuperclass
-@JsonIgnoreProperties(value = "id", allowGetters = true)
+@JsonIgnoreProperties(value = "id")
 public abstract class AbstractModel<T extends AbstractModel<T>> implements Serializable {
 
-    @Setter(AccessLevel.NONE)
     @ApiModelProperty(name = "id", position = -1, accessMode = ApiModelProperty.AccessMode.READ_ONLY, example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

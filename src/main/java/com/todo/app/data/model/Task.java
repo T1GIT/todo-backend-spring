@@ -15,10 +15,10 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 
 
+@ApiModel
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel
 @Entity
 @Table(name = "tasks")
 public class Task extends AuditModel<Task> {
@@ -27,17 +27,17 @@ public class Task extends AuditModel<Task> {
     @NotNull
     @Size(max = 255)
     @Column(nullable = false)
-    private String title;
+    protected String title;
 
     @ApiModelProperty(position = 1, example = "Long describing, what I wanted to do")
     @Size(max = 1000)
     @Column(columnDefinition = "text", length = 1000)
-    private String description;
+    protected String description;
 
     @ApiModelProperty(position = 2, example = "true")
     @NotNull
     @Column(nullable = false)
-    private boolean completed = false;
+    protected boolean completed = false;
 
     @ApiModelProperty(position = 3, example = "2020-12-30")
     private Date executeDate;

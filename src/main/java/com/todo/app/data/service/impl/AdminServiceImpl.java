@@ -5,28 +5,22 @@ import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.service.AdminService;
 import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.security.util.enums.Role;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.List;
 
 
+@RequiredArgsConstructor
 @Component
+@Transactional
 public class AdminServiceImpl implements AdminService {
 
-    private final EntityManager entityManager;
     private final UserRepository userRepository;
-
-    public AdminServiceImpl(EntityManager entityManager, UserRepository userRepository) {
-        this.entityManager = entityManager;
-        this.userRepository = userRepository;
-    }
-
-    @Override
-    public List<Object> executeSql(String query) {
-        System.out.println(entityManager.createNativeQuery(query).getClass());
-        return entityManager.createNativeQuery(query).getResultList();
-    }
 
     @Override
     public User changeRole(long userId, Role role) {

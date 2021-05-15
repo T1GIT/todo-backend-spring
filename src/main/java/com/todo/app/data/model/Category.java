@@ -12,10 +12,11 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Size;
 import java.util.*;
 
+
+@ApiModel
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel
 @Entity
 @Table(name = "categories")
 public class Category extends AuditModel<Category> {
@@ -32,6 +33,7 @@ public class Category extends AuditModel<Category> {
 
     @JsonIgnore
     @Setter(AccessLevel.NONE)
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Task> tasks = new HashSet<>();
 

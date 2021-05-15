@@ -7,7 +7,5 @@ import java.util.List;
 
 public interface AdminService {
 
-    List<Object> executeSql(String query);
-
     User changeRole(long userId, Role role);
 }
