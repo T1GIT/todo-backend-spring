@@ -32,7 +32,7 @@ public class RefreshServiceImpl implements RefreshService {
                 userRepository.findById(userId).map(user ->
                         new Refresh().edit(r -> {
                             r.setValue(genValue());
-                            user.addRefresh(r);
+                            r.setUser(user);
                         })
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }

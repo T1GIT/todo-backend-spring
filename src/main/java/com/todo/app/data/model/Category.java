@@ -3,48 +3,36 @@ package com.todo.app.data.model;
 
 import com.todo.app.data.util.base.AuditModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Size;
 import java.util.*;
 
-
+@Data
+@EqualsAndHashCode(callSuper = false)
+@ApiModel
 @Entity
 @Table(name = "categories")
 public class Category extends AuditModel<Category> {
 
+    @ApiModelProperty(position = 0, example = "Shopping list")
     @Size(max = 100)
     @Column(nullable = false, length = 100)
     private String name;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final Set<Task> tasks = new HashSet<>();
-
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
-    public String getName() {
-        return name;
-    }
+    @JsonIgnore
+    @Setter(AccessLevel.NONE) @ToString.Exclude
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final Set<Task> tasks = new HashSet<>();
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Set<Task> getTasks() {
-        return tasks;
-    }
 
     public void addTask(Task task) {
         this.tasks.add(task);
@@ -54,13 +42,5 @@ public class Category extends AuditModel<Category> {
     public void removeTask(Task task) {
         this.tasks.remove(task);
         task.setCategory(null);
-    }
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "name='" + name + '\'' +
-                ", id=" + id +
-                '}';
     }
 }

@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Provides static methods for working with cookies.
@@ -50,15 +51,12 @@ public abstract class CookieUtil {
      * @return value of the cookie or null if cookie was not found
      */
     public static String get(HttpServletRequest request, String name) {
-        if (request.getCookies() == null) {
-            return null;
-        } else {
-            return Arrays
-                    .stream(request.getCookies())
-                    .filter(c -> c.getName().equals(encode(name))).findAny()
-                    .map(cookie -> decode(cookie.getValue()))
-                    .orElse(null);
-        }
+        return Optional.ofNullable(request.getCookies()).map(
+                cookies -> Arrays.stream(cookies)
+                        .filter(c -> c.getName().equals("REFRESH")).findAny()
+                        .map(Cookie::getValue)
+                        .orElse(null))
+                .orElse(null);
     }
 
     /**
@@ -75,7 +73,6 @@ public abstract class CookieUtil {
                     setHttpOnly(true);
                     setMaxAge((int) expiresIn);
                     setDomain(TodoApplication.DOMAIN);
-                    setPath("/");
         }});
     }
 

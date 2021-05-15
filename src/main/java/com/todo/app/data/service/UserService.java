@@ -14,11 +14,11 @@ public interface UserService {
 
     User login(User user) throws EmailNotExistsException, IncorrectPswException;
 
-    User changeEmail(long userId, String newEmail) throws EmailExistsException, ResourceNotFoundException;
+    void changeEmail(long userId, String newEmail) throws EmailExistsException, ResourceNotFoundException;
 
-    User changePsw(long userId, String newPsw) throws ResourceNotFoundException;
+    void changePsw(long userId, String newPsw) throws ResourceNotFoundException;
 
-    User update(long userId, User newUser) throws ResourceNotFoundException;
+    void update(long userId, User newUser) throws ResourceNotFoundException;
 
     void delete(long userId);
 }

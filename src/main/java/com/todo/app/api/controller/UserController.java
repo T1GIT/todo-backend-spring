@@ -1,21 +1,22 @@
 package com.todo.app.api.controller;
 
-import com.todo.app.api.controller.util.exception.InvalidEmailException;
-import com.todo.app.api.controller.util.exception.InvalidPswException;
+import com.todo.app.api.util.exception.InvalidEmailException;
+import com.todo.app.api.util.exception.InvalidPswException;
 import com.todo.app.data.model.User;
 import com.todo.app.data.service.UserService;
 import com.todo.app.security.auth.AuthContext;
-import com.todo.app.security.auth.AuthUser;
 import com.todo.app.security.Validator;
-import io.swagger.annotations.Api;
+import com.todo.app.security.token.RefreshProvider;
+import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 
 @Api(tags = "User controller",
-        description = "Controller to provide operations with user models")
+        description = "Provides operations with user models")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -28,24 +29,28 @@ public class UserController {
         this.authContext = authContext;
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Validates and changes user email address")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping(value = "/email", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User changeEmail(
+    public void changeEmail(
+            @ApiParam(value = "DESC")
             @RequestBody User user) {
         if (!Validator.email(user.getEmail()))
             throw new InvalidEmailException(user.getEmail());
-        return userService.changeEmail(authContext.getUser().getId(), user.getEmail());
+        userService.changeEmail(authContext.getUser().getId(), user.getEmail());
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Validates and changes user's password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping(value = "/psw", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User changePsw(
+    public void changePsw(
             @RequestBody User user) {
         if (!Validator.psw(user.getPsw()))
             throw new InvalidPswException(user.getPsw());
-        return userService.changePsw(authContext.getUser().getId(), user.getPsw());
+        userService.changePsw(authContext.getUser().getId(), user.getPsw());
     }
 
+    @ApiOperation("Updates information about the user")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping()
     public void updateUser(
@@ -53,9 +58,14 @@ public class UserController {
         userService.update(authContext.getUser().getId(), user);
     }
 
+    @ApiOperation("Deletes the user")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Entity was deleted or not existed")
+    })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping()
-    public void deleteUser() {
+    public void deleteUser(HttpServletResponse response) {
         userService.delete(authContext.getUser().getId());
+        RefreshProvider.erase(response);
     }
 }

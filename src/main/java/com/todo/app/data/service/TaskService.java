@@ -13,9 +13,9 @@ public interface TaskService {
 
     Task add(long userId, long categoryId, Task task) throws ResourceNotFoundException;
 
-    Task update(long userId, long taskId, Task newTask) throws ResourceNotFoundException;
+    void update(long userId, long taskId, Task newTask) throws ResourceNotFoundException;
 
-    Task setCompleted(long userId, long taskId, boolean isCompleted) throws ResourceNotFoundException;
+    void setCompleted(long userId, long taskId, boolean isCompleted) throws ResourceNotFoundException;
 
     void delete(long userId, long taskId);
 }

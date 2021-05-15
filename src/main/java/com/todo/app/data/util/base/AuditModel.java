@@ -2,6 +2,7 @@ package com.todo.app.data.util.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,7 +15,6 @@ import java.util.Date;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(value = {"createdAt", "updatedAt"}, allowGetters = true)
 public abstract class AuditModel<T extends AuditModel<T>> extends AbstractModel<T> {
 
     @JsonIgnore
@@ -22,19 +22,10 @@ public abstract class AuditModel<T extends AuditModel<T>> extends AbstractModel<
     @Column(name = "createdAt", nullable = false, updatable = false)
     protected Date createdAt = new Date();
 
-
     @JsonIgnore
     @LastModifiedDate
     @Column(name = "updatedAt", nullable = false)
     protected Date updatedAt = new Date();
-
-    public AuditModel() {
-        super();
-    }
-
-    public AuditModel(long id) {
-        super(id);
-    }
 
     public Date getCreatedAt() {
         return createdAt;
@@ -42,13 +33,5 @@ public abstract class AuditModel<T extends AuditModel<T>> extends AbstractModel<
 
     public Date getUpdatedAt() {
         return updatedAt;
-    }
-
-    @Override
-    public String toString() {
-        return "AuditModel{" +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
     }
 }

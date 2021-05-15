@@ -34,25 +34,25 @@ public class CategoryController {
         return categoryService.getOf(authContext.getUser().getId());
     }
 
-//    @ResponseStatus(HttpStatus.CREATED)
-//    @PostMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public Category addCategory(
-//            @RequestBody Category category) {
-//        return categoryService.add(userId, category);
-//    }
-//
-//    @ResponseStatus(HttpStatus.OK)
-//    @PatchMapping(value = "/category/{categoryId}/name", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public Category changeName(
-//            @PathVariable long categoryId,
-//            @RequestBody Category category) {
-//        return categoryService.changeName(categoryId, category.getName());
-//    }
-//
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @DeleteMapping(value = "/category/{categoryId}")
-//    public void deleteCategory(
-//            @PathVariable long categoryId) {
-//        categoryService.delete(categoryId);
-//    }
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Category addCategory(
+            @RequestBody Category category) {
+        return categoryService.add(authContext.getUser().getId(), category);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PatchMapping(value = "/category/{categoryId}/name", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void changeName(
+            @PathVariable long categoryId,
+            @RequestBody Category category) {
+        categoryService.changeName(authContext.getUser().getId(), categoryId, category.getName());
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = "/category/{categoryId}")
+    public void deleteCategory(
+            @PathVariable long categoryId) {
+        categoryService.delete(authContext.getUser().getId(), categoryId);
+    }
 }

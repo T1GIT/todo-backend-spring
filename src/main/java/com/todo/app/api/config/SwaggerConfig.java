@@ -1,8 +1,5 @@
 package com.todo.app.api.config;
 
-import com.todo.app.TodoApplication;
-import io.swagger.annotations.Api;
-import org.springframework.cglib.core.Predicate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -12,14 +9,18 @@ import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.service.Tag;
+import springfox.documentation.builders.ResponseMessageBuilder;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.ApiSelector;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import static springfox.documentation.builders.PathSelectors.regex;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 
 @Configuration
@@ -30,13 +31,16 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
     @Bean
     public Docket productApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .select().apis(RequestHandlerSelectors.basePackage("com.todo.app"))
+                .apiInfo(metaData())
+                .securityContexts(securityContexts())
+                .securitySchemes(apiKeys())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.todo.app.api.controller"))
                 .paths(PathSelectors.any())
-                .build()
-                .apiInfo(metaData());
+                .build();
     }
 
-    protected ApiInfo metaData() {
+    private ApiInfo metaData() {
         return new ApiInfoBuilder()
                 .title("TODO REST API")
                 .description("This is server API allows creating users, theirs categories and tasks")
@@ -44,7 +48,27 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .license("Apache License Version 2.0") // TODO: put license type
                 .licenseUrl("https://www.apache.org/licenses/LICENSE-2.0\"") // TODO: put license url
                 .contact(new Contact("Dmitriy Derbin", "http://vk.com/t1monvk", "derbindima5@gmail.com"))
+                .termsOfServiceUrl("Все права защищены (нет)")
                 .build();
+    }
+
+    private List<ApiKey> apiKeys() {
+        return Collections.singletonList(
+                new ApiKey("JWT", "Authorisation", "header"));
+    }
+
+    private List<SecurityContext> securityContexts() {
+        return Collections.singletonList(
+                SecurityContext.builder().securityReferences(defaultAuth()).build());
+    }
+
+    private List<SecurityReference> defaultAuth() {
+        return Collections.singletonList(
+                new SecurityReference(
+                        "JWT",
+                        new AuthorizationScope[]{
+                                new AuthorizationScope("BASIC", "access TODO api"),
+                                new AuthorizationScope("ADMIN", "access administrative functionality")}));
     }
 
     @Override

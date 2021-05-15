@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "INVALID_PSW")
+@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 public class IncorrectPswException extends SecurityException {
     public IncorrectPswException(String email) {
         super(String.format(

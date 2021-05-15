@@ -13,7 +13,7 @@ public interface CategoryService {
 
     Category add(long userId, Category category) throws ResourceNotFoundException;
 
-    Category changeName(long userId, long categoryId, String newName) throws ResourceNotFoundException;
+    void changeName(long userId, long categoryId, String newName) throws ResourceNotFoundException;
 
     void delete(long userId, long categoryId);
 }

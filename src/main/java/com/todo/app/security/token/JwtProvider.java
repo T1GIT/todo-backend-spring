@@ -1,6 +1,6 @@
 package com.todo.app.security.token;
 
-import com.todo.app.api.util.CookieUtil;
+import com.todo.app.TodoApplication;
 import com.todo.app.data.model.User;
 import com.todo.app.security.auth.AuthUser;
 import com.todo.app.security.crypt.KeyGenerator;
@@ -19,19 +19,22 @@ import java.util.Date;
 public abstract class JwtProvider {
 
     private final static Duration DURATION = Duration.ofHours(1);
-    private final static String TOKEN_NAME = "JWT";
 
-    private final static Key KEY = Keys.hmacShaKeyFor(KeyGenerator.bytes(KeyLength.JWT_KEY));
+    private static Key KEY = Keys.hmacShaKeyFor(KeyGenerator.bytes(KeyLength.JWT_KEY));
 
-    public static String stringify(User user) {
+    public static String getJwt(User user) {
         return Jwts.builder()
-                .setClaims(AuthUser.toMap(user))
+                .setHeaderParam("typ", "JWT")
                 .setExpiration(new Date(System.currentTimeMillis() + DURATION.toMillis()))
+                .setIssuedAt(new Date())
+                .setIssuer(TodoApplication.ADDRESS)
+                .setAudience(user.getRole().name())
+                .setClaims(AuthUser.toMap(user))
                 .signWith(KEY)
                 .compact();
     }
 
-    public static AuthUser parse(String jwt) throws JwtException {
+    public static AuthUser parseUser(String jwt) throws JwtException {
         return AuthUser.fromMap(
                 Jwts.parserBuilder()
                         .setSigningKey(KEY)
@@ -40,18 +43,14 @@ public abstract class JwtProvider {
                         .getBody());
     }
 
-    public static void attach(HttpServletResponse response, User user) {
-        CookieUtil.add(response, TOKEN_NAME, stringify(user), DURATION.getSeconds());
-    }
-
     public static AuthUser extract(HttpServletRequest request) throws JwtException, MissedJwtException {
-        String jwt = CookieUtil.get(request, TOKEN_NAME);
+        String jwt = request.getHeader("authorisation");
         if (jwt == null)
             throw new MissedJwtException();
-        return parse(jwt);
+        return parseUser(jwt.substring(7));
     }
 
-    public static void erase(HttpServletResponse response) {
-        CookieUtil.add(response, TOKEN_NAME, null, 0);
+    public static void updateKey() {
+        KEY = Keys.hmacShaKeyFor(KeyGenerator.bytes(KeyLength.JWT_KEY));
     }
 }

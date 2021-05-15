@@ -39,13 +39,13 @@ public class CategoryServiceImpl implements CategoryService {
     public Category add(long userId, Category category) throws ResourceNotFoundException {
         return categoryRepository.saveAndFlush(
                 userRepository.findById(userId).map(user ->
-                        category.edit(user::addCategory)
+                        category.edit(c -> c.setUser(user))
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }
 
     @Override
-    public Category changeName(long userId, long categoryId, String newName) throws ResourceNotFoundException {
-        return categoryRepository.saveAndFlush(
+    public void changeName(long userId, long categoryId, String newName) throws ResourceNotFoundException {
+        categoryRepository.saveAndFlush(
                 categoryRepository.findByUserIdAndId(userId, categoryId).map(category ->
                         category.edit(c -> c.setName(newName))
                 ).orElseThrow(() -> new ResourceNotFoundException(Category.class, categoryId)));

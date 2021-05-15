@@ -31,7 +31,6 @@ public class UserServiceImpl implements UserService {
             throw new EmailExistsException(user.getEmail());
         return userRepository.saveAndFlush(
                 user.edit(u -> {
-                    u.setEmail(user.getEmail());
                     u.setPsw(Hash.hash(user.getPsw()));
                     u.addCategory(new Category() {{ setName("Задачи"); }});
                     u.setRole(Role.BASIC);
@@ -49,18 +48,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User changeEmail(long userId, String newEmail) throws EmailExistsException, ResourceNotFoundException {
+    public void changeEmail(long userId, String newEmail) throws EmailExistsException, ResourceNotFoundException {
         if (userRepository.existsByEmail(newEmail))
             throw new EmailExistsException(newEmail);
-        return userRepository.saveAndFlush(
+        userRepository.saveAndFlush(
                 userRepository.findById(userId).map(user ->
                         user.edit(u -> u.setEmail(newEmail))
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }
 
     @Override
-    public User changePsw(long userId, String newPsw) throws ResourceNotFoundException {
-        return userRepository.saveAndFlush(
+    public void changePsw(long userId, String newPsw) throws ResourceNotFoundException {
+        userRepository.saveAndFlush(
                 userRepository.findById(userId).map(user ->
                         user.edit(u -> u.setPsw(Hash.hash(newPsw)))
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId))
@@ -68,8 +67,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(long userId, User newUser) throws ResourceNotFoundException {
-        return userRepository.saveAndFlush(
+    public void update(long userId, User newUser) throws ResourceNotFoundException {
+        userRepository.saveAndFlush(
                 userRepository.findById(userId).map(user ->
                         user.edit(u -> {
                             u.setName(newUser.getName());

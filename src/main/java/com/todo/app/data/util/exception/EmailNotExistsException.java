@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "EMAIL_NOT_EXISTS")
+@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 public class EmailNotExistsException extends DataException {
     public EmailNotExistsException(String email) {
         super(String.format(

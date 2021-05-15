@@ -1,14 +1,17 @@
 package com.todo.app.api.controller;
 
-import com.todo.app.api.controller.util.json.QueryJson;
+import com.todo.app.api.util.json.request.QueryJson;
+import com.todo.app.data.model.User;
 import com.todo.app.data.service.AdminService;
 import com.todo.app.data.service.UserService;
 import com.todo.app.security.auth.AuthContext;
+import com.todo.app.security.token.JwtProvider;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.AuthorizationScope;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 
@@ -18,20 +21,34 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final UserService userService;
-    private final AuthContext authContext;
     private final AdminService adminService;
 
-    public AdminController(UserService userService, AuthContext authContext, AdminService adminService) {
-        this.userService = userService;
-        this.authContext = authContext;
+    public AdminController(AdminService adminService) {
         this.adminService = adminService;
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/query")
-    public List<Object> execute(@RequestBody QueryJson queryJson) {
-        return adminService.executeSql(queryJson.getQuery());
+    public ResponseEntity<Object> execute(
+            @RequestBody QueryJson queryJson) {
+        try {
+            return ResponseEntity.ok(adminService.executeSql(queryJson.getQuery()));
+        } catch (Exception exception) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+        }
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/jwt/update/key")
+    public void updateJwtKey() {
+        JwtProvider.updateKey();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/user/{userId}/role")
+    public User setRole(
+            @PathVariable long userId,
+            @RequestBody User user) {
+        return adminService.changeRole(userId, user.getRole());
+    }
 }

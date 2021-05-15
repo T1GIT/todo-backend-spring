@@ -16,35 +16,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.io.IOException;
 
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
-    private final RefreshService refreshService;
-
-    public SecurityFilter(RefreshService refreshService) {
-        this.refreshService = refreshService;
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            String refreshCookie = RefreshProvider.extract(request);
-            try {
-                AuthUser user = JwtProvider.extract(request);
-                SecurityContextHolder.getContext().setAuthentication(user);
-            } catch (JwtException | MissedJwtException exception) {
-                Refresh refresh = refreshService.update(refreshCookie);
-                RefreshProvider.attach(response, refresh.getValue());
-                JwtProvider.attach(response, refresh.getUser());
-            }
-        } catch (MissedRefreshException | ResourceNotFoundException e) {
-            RefreshProvider.erase(response);
-            JwtProvider.erase(response);
-        }
+            SecurityContextHolder.getContext().setAuthentication(
+                    JwtProvider.extract(request));
+        } catch (JwtException | MissedJwtException ignored) {}
         filterChain.doFilter(request, response);
     }
 }

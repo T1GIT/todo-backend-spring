@@ -3,6 +3,8 @@ package com.todo.app.data.model;
 
 import com.todo.app.data.util.base.AuditModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
@@ -12,24 +14,29 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 
 
+@ApiModel
 @Entity
 @Table(name = "tasks")
 public class Task extends AuditModel<Task> {
 
+    @ApiModelProperty(position = 0, example = "Do some things")
     @NotNull
-    @Size(max = 100)
-    @Column(nullable = false, length = 100)
+    @Size(max = 255)
+    @Column(nullable = false)
     private String title;
 
+    @ApiModelProperty(position = 1, example = "Long describing, what I wanted to do")
     @Size(max = 1000)
     @Column(columnDefinition = "text", length = 1000)
     private String description;
 
-    private Date executeDate;
-
+    @ApiModelProperty(position = 2, example = "true")
     @NotNull
     @Column(nullable = false)
     private boolean completed = false;
+
+    @ApiModelProperty(position = 3, example = "2020-12-30")
+    private Date executeDate;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

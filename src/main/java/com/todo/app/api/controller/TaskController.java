@@ -42,18 +42,18 @@ public class TaskController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping(value = "/task/{taskId}")
-    public Task updateTask(
+    public void updateTask(
             @PathVariable long taskId,
             @RequestBody Task task) {
-        return taskService.update(authContext.getUser().getId(), taskId, task);
+        taskService.update(authContext.getUser().getId(), taskId, task);
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping(value = "/task/{taskId}/completed", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Task changeCompleted(
+    public void changeCompleted(
             @PathVariable long taskId,
             @RequestBody Task task) {
-        return taskService.setCompleted(authContext.getUser().getId(), taskId, task.isCompleted());
+        taskService.setCompleted(authContext.getUser().getId(), taskId, task.isCompleted());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

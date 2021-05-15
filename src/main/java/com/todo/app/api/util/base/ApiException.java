@@ -1,4 +1,4 @@
-package com.todo.app.api.controller.util.base;
+package com.todo.app.api.util.base;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
