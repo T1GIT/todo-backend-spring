@@ -8,6 +8,8 @@ import com.todo.app.security.util.enums.Role;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiResponse;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.persistence.*;
@@ -15,6 +17,9 @@ import javax.validation.constraints.*;
 import java.util.*;
 
 
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @ApiModel
 @Entity
 @Table(name = "users")
@@ -58,76 +63,14 @@ public class User extends AuditModel<User> {
     protected Role role = Role.BASIC;
 
     @JsonIgnore
+    @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Category> categories = new HashSet<>();
     
     @JsonIgnore
+    @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Refresh> refreshes = new HashSet<>();
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String login) {
-        this.email = login;
-    }
-
-    public String getPsw() {
-        return psw;
-    }
-
-    public void setPsw(String psw) {
-        this.psw = psw;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Set<Category> getCategories() {
-        return categories;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
-    }
-
-    public Date getBirthdate() {
-        return birthdate;
-    }
-
-    public void setBirthdate(Date birthdate) {
-        this.birthdate = birthdate;
-    }
-    
-    public Set<Refresh> getRefreshes() {
-        return refreshes;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
     public void addCategory(Category category) {
         this.categories.add(category);
@@ -147,18 +90,5 @@ public class User extends AuditModel<User> {
     public void removeRefresh(Refresh refresh) {
         this.refreshes.remove(refresh);
         refresh.setUser(null);
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", psw='" + psw + '\'' +
-                ", surname='" + surname + '\'' +
-                ", name='" + name + '\'' +
-                ", patronymic='" + patronymic + '\'' +
-                ", birthdate=" + birthdate +
-                ", id=" + id +
-                '}';
     }
 }

@@ -13,7 +13,8 @@ import javax.validation.constraints.Size;
 import java.util.*;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @ApiModel
 @Entity
 @Table(name = "categories")
@@ -25,14 +26,14 @@ public class Category extends AuditModel<Category> {
     private String name;
 
     @JsonIgnore
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
     @JsonIgnore
-    @Setter(AccessLevel.NONE) @ToString.Exclude
+    @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Task> tasks = new HashSet<>();
-
 
     public void addTask(Task task) {
         this.tasks.add(task);

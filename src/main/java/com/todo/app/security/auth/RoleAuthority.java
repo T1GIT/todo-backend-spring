@@ -5,14 +5,14 @@ import org.springframework.security.core.GrantedAuthority;
 
 public class RoleAuthority implements GrantedAuthority {
 
-    private final Role role;
+    private final String role;
 
     public RoleAuthority(Role role) {
-        this.role = role;
+        this.role = "ROLE_" + role.name();
     }
 
     @Override
     public String getAuthority() {
-        return "ROLE_" + role.name();
+        return role;
     }
 }
