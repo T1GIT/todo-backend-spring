@@ -1,8 +1,5 @@
 package com.todo.app.security;
 
-import java.util.regex.Pattern;
-
-
 /**
  * Provides static methods to check if
  * email or password string is valid
@@ -24,16 +21,12 @@ public abstract class Validator {
      */
     public static final String FINGERPRINT_PATTERN = "^[a-zA-Z0-9]*$";
 
-
-    private static final Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
-    private static final Pattern pswPattern = Pattern.compile(PSW_PATTERN);
-    private static final Pattern fingerprintPattern = Pattern.compile(FINGERPRINT_PATTERN);
-
     /**
      * Checks if email is valid
      * <p>
      * Email must:
      * <ul>
+     * <li> be not null
      * <li> contain only latin symbols and numerics
      * <li> contain al least 3 domains, separated by point
      * </ul>
@@ -42,7 +35,8 @@ public abstract class Validator {
      * @return true if email is valid
      */
     public static boolean email(final String email) {
-        return emailPattern.matcher(email).matches() &&
+        return email != null &&
+                email.matches(EMAIL_PATTERN) &&
                 email.length() >= 7 &&
                 email.length() <= 255;
     }
@@ -52,6 +46,7 @@ public abstract class Validator {
      * <p>
      * Password must:
      * <ul>
+     * <li> be not null
      * <li> contain numerics
      * <li> contain latin or cyrillic symbols
      * <li> be longer then 7 symbols
@@ -62,7 +57,8 @@ public abstract class Validator {
      * @return true if password is valid
      */
     public static boolean psw(final String psw) {
-        return pswPattern.matcher(psw).matches() &&
+        return psw != null &&
+                psw.matches(PSW_PATTERN) &&
                 psw.length() >= 8 &&
                 psw.length() <= 120;
     }
@@ -72,6 +68,7 @@ public abstract class Validator {
      * <p>
      * Fingerprint must:
      * <ul>
+     * <li> be not null
      * <li> contain only uppercase, lowercase latin symbols and numerics
      * <li> have length equal 20
      * </ul>
@@ -80,7 +77,8 @@ public abstract class Validator {
      * @return true if fingerprint is valid
      */
     public static boolean fingerprint(final String fingerprint) {
-        return fingerprintPattern.matcher(fingerprint).matches() &&
+        return fingerprint != null &&
+                fingerprint.matches(FINGERPRINT_PATTERN) &&
                 fingerprint.length() >= 10 &&
                 fingerprint.length() <= 50;
     }

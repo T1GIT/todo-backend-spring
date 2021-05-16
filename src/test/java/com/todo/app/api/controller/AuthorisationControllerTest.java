@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.servlet.http.Cookie;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -37,15 +36,16 @@ class AuthorisationControllerTest {
     static String email = "example@mail.ru";
     static String invalidEmail = "example mail.ru";
     static String anotherEmail = "example1@mail.ru";
+
     static String psw = "password1";
     static String invalidPsw = "password";
     static String anotherPsw = "password12";
+
     static String fingerprint = "WfLf40GtRol24T7NDNtC";
     static String invalidFingerprint = "Wfefe2%$$#^Gt";
     static String anotherFingerprint = "afLf40Gt36424T7ND4Fa";
 
     static String refresh;
-
     static Gson parser = new Gson();
 
     @Autowired
@@ -59,7 +59,7 @@ class AuthorisationControllerTest {
     void beforeEach() throws Exception {
         mvc.perform(MockMvcRequestBuilders
                 .post("/authorisation/register")
-                .content(parseForm(0, 0, 0))
+                .content(createFormJson(0, 0, 0))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -68,9 +68,6 @@ class AuthorisationControllerTest {
                 .andDo(mvcResult -> refresh = mvcResult.getResponse()
                         .getCookie(RefreshProvider.COOKIE_NAME).getValue());
         assertEquals(1, userRepository.count());
-//                .andDo(mvcResult -> jwt = parser.fromJson(
-//                        mvcResult.getResponse().getContentAsString(), JwtJson.class)
-//                        .getJwt());
     }
 
     @AfterEach
@@ -80,26 +77,26 @@ class AuthorisationControllerTest {
 
     @Test
     void register() throws Exception {
-        ArrayList<String> invalidCases = new ArrayList<>() {{
-            add(parseForm(1, 0, 0));
-            add(parseForm(0, 1, 0));
-            add(parseForm(0, 0, 1));
-            add(parseForm(0, 0, 0));
-        }};
-        ArrayList<ResultMatcher> expectations = new ArrayList<>() {{
-            add(status().isUnprocessableEntity());
-            add(status().isUnprocessableEntity());
-            add(status().isUnprocessableEntity());
-            add(status().isConflict());
-        }};
-        for (int i = 0; i < invalidCases.size(); i++) {
+        String[] cases = new String[]{
+                createFormJson(1, 0, 0),
+                createFormJson(0, 1, 0),
+                createFormJson(0, 0, 1),
+                createFormJson(0, 0, 0)
+        };
+        ResultMatcher[] expectations = new ResultMatcher[]{
+                status().isUnprocessableEntity(),
+                status().isUnprocessableEntity(),
+                status().isUnprocessableEntity(),
+                status().isConflict()
+        };
+        for (int i = 0; i < cases.length; i++) {
             System.out.println("CASE " + i);
             mvc.perform(MockMvcRequestBuilders
                     .post("/authorisation/register")
-                    .content(invalidCases.get(i))
+                    .content(cases[i])
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(expectations.get(i));
+                    .andExpect(expectations[i]);
         }
         assertEquals(1, userRepository.count());
         assertEquals(1, sessionRepository.count());
@@ -109,37 +106,37 @@ class AuthorisationControllerTest {
     void login() throws Exception {
         mvc.perform(MockMvcRequestBuilders
                 .post("/authorisation/login")
-                .content(parseForm(0, 0, 0))
+                .content(createFormJson(0, 0, 0))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.jwt").exists())
                 .andExpect(cookie().exists(RefreshProvider.COOKIE_NAME));
         assertEquals(1, sessionRepository.count());
-        ArrayList<String> invalidCases = new ArrayList<>() {{
-            add(parseForm(1, 0, 0));
-            add(parseForm(0, 1, 0));
-            add(parseForm(0, 0, 1));
-            add(parseForm(2, 0, 0));
-            add(parseForm(0, 2, 0));
-            add(parseForm(0, 0, 2));
-        }};
-        ArrayList<ResultMatcher> expectations = new ArrayList<>() {{
-            add(status().isUnprocessableEntity());
-            add(status().isUnprocessableEntity());
-            add(status().isUnprocessableEntity());
-            add(status().isNotFound());
-            add(status().isUnauthorized());
-            add(status().isOk());
-        }};
-        for (int i = 0; i < invalidCases.size(); i++) {
+        String[] cases = new String[]{
+                createFormJson(1, 0, 0),
+                createFormJson(0, 1, 0),
+                createFormJson(0, 0, 1),
+                createFormJson(2, 0, 0),
+                createFormJson(0, 2, 0),
+                createFormJson(0, 0, 2)
+        };
+        ResultMatcher[] expectations = new ResultMatcher[]{
+                status().isUnprocessableEntity(),
+                status().isUnprocessableEntity(),
+                status().isUnprocessableEntity(),
+                status().isNotFound(),
+                status().isUnauthorized(),
+                status().isOk()
+        };
+        for (int i = 0; i < cases.length; i++) {
             System.out.println("CASE " + i);
             mvc.perform(MockMvcRequestBuilders
                     .post("/authorisation/login")
-                    .content(invalidCases.get(i))
+                    .content(cases[i])
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(expectations.get(i));
+                    .andExpect(expectations[i]);
         }
         assertEquals(2, sessionRepository.count());
     }
@@ -149,7 +146,7 @@ class AuthorisationControllerTest {
         assertEquals(1, sessionRepository.count());
         mvc.perform(MockMvcRequestBuilders
                 .post("/authorisation/logout")
-                .content(parseForm(0, 0, 0))
+                .content(createFormJson(0, 0, 0))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .cookie(new Cookie(RefreshProvider.COOKIE_NAME, refresh)))
@@ -163,7 +160,7 @@ class AuthorisationControllerTest {
         String refresh = sessionRepository.findByFingerprint(fingerprint).get().getRefresh();
         mvc.perform(MockMvcRequestBuilders
                 .post("/authorisation/refresh")
-                .content(parseForm(3, 3, 0))
+                .content(createFormJson(3, 3, 0))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .cookie(new Cookie(RefreshProvider.COOKIE_NAME, refresh)))
@@ -174,24 +171,8 @@ class AuthorisationControllerTest {
         assertNotEquals(refresh, sessionRepository.findByFingerprint(fingerprint).get().getRefresh());
     }
 
-    String parseForm(int emailType, int pswType, int fingerprintType) {
-        User user = new User();
-        user.setEmail(switch (emailType) {
-            case 0 -> email;
-            case 1 -> invalidEmail;
-            case 2 -> anotherEmail;
-            case 3 -> null;
-            default -> throw new IllegalStateException("Unexpected value: " + emailType);
-        });
-        user.setPsw(switch (pswType) {
-            case 0 -> psw;
-            case 1 -> invalidPsw;
-            case 2 -> anotherPsw;
-            case 3 -> null;
-            default -> throw new IllegalStateException("Unexpected value: " + pswType);
-        });
+    String createFormJson(int emailType, int pswType, int fingerprintType) {
         AuthForm authForm = new AuthForm();
-        authForm.setUser(user);
         authForm.setFingerprint(switch (fingerprintType) {
             case 0 -> fingerprint;
             case 1 -> invalidFingerprint;
@@ -199,6 +180,22 @@ class AuthorisationControllerTest {
             case 3 -> null;
             default -> throw new IllegalStateException("Unexpected value: " + fingerprintType);
         });
+        authForm.setUser(new User().edit(u -> {
+            u.setEmail(switch (emailType) {
+                case 0 -> email;
+                case 1 -> invalidEmail;
+                case 2 -> anotherEmail;
+                case 3 -> null;
+                default -> throw new IllegalStateException("Unexpected value: " + emailType);
+            });
+            u.setPsw(switch (pswType) {
+                case 0 -> psw;
+                case 1 -> invalidPsw;
+                case 2 -> anotherPsw;
+                case 3 -> null;
+                default -> throw new IllegalStateException("Unexpected value: " + pswType);
+            });
+        }));
         return parser.toJson(authForm, AuthForm.class);
     }
 }

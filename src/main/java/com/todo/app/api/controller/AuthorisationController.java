@@ -38,6 +38,7 @@ public class AuthorisationController {
             @RequestBody AuthForm authForm,
             HttpServletResponse response) {
         validateAuthForm(authForm);
+        System.out.println(authForm.getUser());
         User user = userService.register(authForm.getUser());
         return createSession(user, authForm.getFingerprint(), response);
     }

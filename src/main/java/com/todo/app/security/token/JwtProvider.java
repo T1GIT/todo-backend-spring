@@ -45,7 +45,7 @@ public abstract class JwtProvider {
     }
 
     public static AuthUser extract(HttpServletRequest request) throws JwtException, MissedJwtException {
-        String jwt = request.getHeader("authorisation");
+        String jwt = request.getHeader("authorization");
         if (jwt == null)
             throw new MissedJwtException();
         return parseUser(jwt.substring(7));
