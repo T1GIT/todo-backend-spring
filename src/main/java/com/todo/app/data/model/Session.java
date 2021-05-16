@@ -3,6 +3,7 @@ package com.todo.app.data.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.todo.app.data.util.base.AuditModel;
+import com.todo.app.security.Validator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,7 +32,7 @@ public class Session extends AuditModel<Session> {
     @ApiModelProperty(position = 1, example = "WfLf40GtRol24T7NDNtC") // TODO: Add example and size
     @NotBlank
     @Size(min = 10, max = 50)
-    @Pattern(regexp = "^[a-zA-Z0-9]*$")
+    @Pattern(regexp = Validator.FINGERPRINT_PATTERN)
     @Column(nullable = false, unique = true, length = 50)
     protected String fingerprint;
 

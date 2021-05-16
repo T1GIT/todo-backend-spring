@@ -4,6 +4,7 @@ package com.todo.app.data.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.todo.app.data.util.base.AuditModel;
+import com.todo.app.security.Validator;
 import com.todo.app.security.util.enums.Role;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -30,14 +31,14 @@ public class User extends AuditModel<User> {
     @ApiModelProperty(position = 0, example = "example@mail.ru")
     @NotBlank
     @Size(min = 7, max = 255)
-    @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,63})$")
+    @Pattern(regexp = Validator.EMAIL_PATTERN)
     @Column(unique = true, nullable = false, length = 256)
     protected String email;
 
     @ApiModelProperty(position = 1, example = "password1")
     @NotBlank
     @Size(min = 8, max = 1181)
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Zа-яА-Я]).*$")
+    @Pattern(regexp = Validator.PSW_PATTERN)
     @Column(nullable = false, length = 1181)
     protected String psw;
 

@@ -12,20 +12,22 @@ public abstract class Validator {
     /**
      * RegExp for validating email address
      */
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,63})$");
+    public static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,63})$";
 
     /**
      * RegExp for validating password
      */
-    private static final Pattern PSW_PATTERN = Pattern.compile(
-            "^(?=.*[0-9])(?=.*[a-zA-Zа-яА-Я]).*$");
+    public static final String PSW_PATTERN = "^(?=.*[0-9])(?=.*[a-zA-Zа-яА-Я]).*$";
 
     /**
      * RegExp for validating fingerprint
      */
-    private static final Pattern FINGERPRINT_PATTERN = Pattern.compile(
-            "^[a-zA-Z0-9]*$");
+    public static final String FINGERPRINT_PATTERN = "^[a-zA-Z0-9]*$";
+
+
+    private static final Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
+    private static final Pattern pswPattern = Pattern.compile(PSW_PATTERN);
+    private static final Pattern fingerprintPattern = Pattern.compile(FINGERPRINT_PATTERN);
 
     /**
      * Checks if email is valid
@@ -40,7 +42,7 @@ public abstract class Validator {
      * @return true if email is valid
      */
     public static boolean email(final String email) {
-        return EMAIL_PATTERN.matcher(email).matches() &&
+        return emailPattern.matcher(email).matches() &&
                 email.length() >= 7 &&
                 email.length() <= 255;
     }
@@ -60,7 +62,7 @@ public abstract class Validator {
      * @return true if password is valid
      */
     public static boolean psw(final String psw) {
-        return PSW_PATTERN.matcher(psw).matches() &&
+        return pswPattern.matcher(psw).matches() &&
                 psw.length() >= 8 &&
                 psw.length() <= 120;
     }
@@ -78,7 +80,7 @@ public abstract class Validator {
      * @return true if fingerprint is valid
      */
     public static boolean fingerprint(final String fingerprint) {
-        return FINGERPRINT_PATTERN.matcher(fingerprint).matches() &&
+        return fingerprintPattern.matcher(fingerprint).matches() &&
                 fingerprint.length() >= 10 &&
                 fingerprint.length() <= 50;
     }
