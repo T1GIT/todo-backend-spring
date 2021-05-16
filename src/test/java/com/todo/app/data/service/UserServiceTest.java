@@ -23,15 +23,8 @@ import javax.transaction.Transactional;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = TodoApplication.class)
-@RunWith(SpringRunner.class)
-@AutoConfigureMockMvc
+@SpringBootTest(classes = TodoApplication.class)
 @TestPropertySource("classpath:application_test.properties")
-@EnableTransactionManagement
-@EnableAutoConfiguration
-@Transactional
 class UserServiceTest {
 
     static User user;
@@ -53,10 +46,7 @@ class UserServiceTest {
 
     @AfterEach
     void afterEach() {
-        if (user != null) {
-            System.out.println(user);
-            userService.delete(user.getId());
-        }
+        userService.delete(user.getId());
     }
 
     @Test
@@ -65,16 +55,18 @@ class UserServiceTest {
         assertNotEquals(psw, user.getPsw());
         assertEquals(1181, user.getPsw().length());
         assertTrue(user.getPsw().matches("^.*:\\d*(:[a-z0-9]*){2}"));
+        System.out.println(user);
     }
 
     @Test
     void login() {
         User user = userService.login(new User()
-                .edit(eUser -> {
-                    eUser.setEmail(email);
-                    eUser.setPsw(psw);
+                .edit(u -> {
+                    u.setEmail(email);
+                    u.setPsw(psw);
                 }));
         assertEquals(name, user.getName());
+        System.out.println(user);
     }
 
     @Test
@@ -82,11 +74,12 @@ class UserServiceTest {
         String newEmail = "new_" + email;
         userService.changeEmail(user.getId(), newEmail);
         User loginUser = userService.login(new User()
-                .edit(eUser -> {
-                    eUser.setEmail(newEmail);
-                    eUser.setPsw(psw);
+                .edit(u -> {
+                    u.setEmail(newEmail);
+                    u.setPsw(psw);
                 }));
         assertNotNull(loginUser);
+        System.out.println(user);
     }
 
     @Test
@@ -94,32 +87,36 @@ class UserServiceTest {
         String newPsw = "new_" + psw;
         userService.changePsw(user.getId(), newPsw);
         User loginUser = userService.login(new User()
-                .edit(eUser -> {
-                    eUser.setEmail(email);
-                    eUser.setPsw(newPsw);
+                .edit(u -> {
+                    u.setEmail(email);
+                    u.setPsw(newPsw);
                 }));
         assertNotNull(loginUser);
+        System.out.println(loginUser);
     }
 
     @Test
     void edit() {
         String newName = "some another name";
-        userService.update(user.getId(), new User().edit(u -> {
-            u.setName(newName);
-        }));
+        userService.update(
+                user.getId(),
+                new User().edit(u -> {
+                    u.setName(newName);
+                }));
         user = userService.login(new User()
-                .edit(eUser -> {
-                    eUser.setEmail(email);
-                    eUser.setPsw(psw);
+                .edit(u -> {
+                    u.setEmail(email);
+                    u.setPsw(psw);
                 }));
         assertEquals(newName, user.getName());
+        System.out.println(user);
     }
 
     @Test
     void delete() {
         userService.delete(user.getId());
-        assertDoesNotThrow(
-                () -> userService.delete(user.getId()));
-        user = null;
+        assertDoesNotThrow(() ->
+                userService.delete(user.getId()));
+        System.out.println(user);
     }
 }

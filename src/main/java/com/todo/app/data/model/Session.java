@@ -40,8 +40,7 @@ public class Session extends AuditModel<Session> {
     private Date expires;
 
     @JsonIgnore
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private User user;
 
 }

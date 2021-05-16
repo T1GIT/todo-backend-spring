@@ -15,22 +15,20 @@ import java.util.Date;
 
 @Data
 @ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AuditModel<T extends AuditModel<T>> extends AbstractModel<T> {
 
-    @Setter(AccessLevel.NONE)
-    @EqualsAndHashCode.Exclude
     @JsonIgnore
     @CreatedDate
+    @Setter(AccessLevel.NONE)
     @Column(name = "createdAt", nullable = false, updatable = false)
     protected Date createdAt = new Date();
 
-    @Setter(AccessLevel.NONE)
-    @EqualsAndHashCode.Exclude
     @JsonIgnore
     @LastModifiedDate
+    @Setter(AccessLevel.NONE)
     @Column(name = "updatedAt", nullable = false)
     protected Date updatedAt = new Date();
 

@@ -25,11 +25,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = TodoApplication.class)
-@RunWith(SpringRunner.class)
 @TestPropertySource("classpath:application_test.properties")
-@EnableTransactionManagement
-@EnableAutoConfiguration
-@Transactional
 class CategoryServiceTest {
 
     static User user;
@@ -37,7 +33,6 @@ class CategoryServiceTest {
 
     @Autowired UserService userService;
     @Autowired CategoryService categoryService;
-    @Autowired UserRepository userRepository;
 
     @BeforeEach
     void beforeEach() {
@@ -59,13 +54,13 @@ class CategoryServiceTest {
         List<Category> sortedCategories = new ArrayList<>(categories);
         sortedCategories.sort((c1, c2) -> String.CASE_INSENSITIVE_ORDER.compare(c1.getName(), c2.getName()));
         assertEquals(sortedCategories, categories);
-        System.out.println(categories);
+        System.out.println(sortedCategories);
     }
 
     @Test
     void add() {
         int amount = 100;
-        user.getCategories().forEach(user::removeCategory);
+        user.getCategories().forEach(c -> categoryService.delete(user.getId(), c.getId()));
         insertCategories(user.getId(), amount);
         List<Category> categories = categoryService.getOf(user.getId());
         assertEquals(amount, categories.size());
@@ -78,13 +73,14 @@ class CategoryServiceTest {
     void changeName() {
         String newName = "some new name";
         int amount = 100;
-        user.getCategories().forEach(user::removeCategory);
+        user.getCategories().forEach(c -> categoryService.delete(user.getId(), c.getId()));
         insertCategories(user.getId(), amount);
-        for (Category category: categoryService.getOf(user.getId()))
-            categoryService.changeName(user.getId(), category.getId(), newName);
         List<Category> categories = categoryService.getOf(user.getId());
         assertEquals(amount, categories.size());
-        for (Category category: categories)
+        for (Category category: categories) {
+            categoryService.changeName(user.getId(), category.getId(), newName);
+        }
+        for (Category category: categoryService.getOf(user.getId()))
             assertEquals(newName, category.getName());
         System.out.println(categories);
     }
@@ -95,6 +91,7 @@ class CategoryServiceTest {
             .edit(c -> c.setName(name)));
         categoryService.delete(user.getId(), category.getId());
         assertDoesNotThrow(() -> categoryService.delete(user.getId(), category.getId()));
+        System.out.println(category);
     }
 
     @Test
@@ -109,7 +106,7 @@ class CategoryServiceTest {
     private void insertCategories(long userId, int amount) {
         for (int i = 0; i < amount; i++) {
             categoryService.add(userId, new Category()
-                    .edit(t -> t.setName(name)));
+                    .edit(c -> c.setName(name)));
         }
     }
 }

@@ -27,12 +27,12 @@ public class Category extends AuditModel<Category> {
     private String name;
 
     @JsonIgnore
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private User user;
 
     @JsonIgnore
     @Setter(AccessLevel.NONE)
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Task> tasks = new HashSet<>();

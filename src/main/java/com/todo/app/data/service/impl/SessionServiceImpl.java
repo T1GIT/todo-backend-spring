@@ -7,6 +7,7 @@ import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.service.SessionService;
 import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.security.crypt.KeyGenerator;
+import com.todo.app.security.token.RefreshProvider;
 import com.todo.app.security.util.enums.KeyLength;
 import com.todo.app.security.util.exception.InvalidFingerprintException;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 
 
 @RequiredArgsConstructor
@@ -28,10 +30,11 @@ public class SessionServiceImpl implements SessionService {
     public Session create(long userId, String fingerprint) throws ResourceNotFoundException {
         return sessionRepository.saveAndFlush(
                 userRepository.findById(userId).map(user ->
-                        new Session().edit(r -> {
-                            r.setRefresh(genValue());
-                            r.setFingerprint(fingerprint);
-                            r.setUser(user);
+                        new Session().edit(s -> {
+                            s.setRefresh(genValue());
+                            s.setExpires(new Date(System.currentTimeMillis() + RefreshProvider.DURATION.toMillis()));
+                            s.setFingerprint(fingerprint);
+                            user.addSession(s);
                         })
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }
@@ -41,9 +44,9 @@ public class SessionServiceImpl implements SessionService {
         return sessionRepository.findByRefresh(refresh).map(session -> {
             if (session.getFingerprint().equals(fingerprint)) {
                 return sessionRepository.saveAndFlush(
-                        session.edit(r -> {
-                            r.setRefresh(genValue());
-                            r.setUser(Hibernate.unproxy(r.getUser(), User.class));
+                        session.edit(s -> {
+                            s.setRefresh(genValue());
+                            s.setExpires(new Date(System.currentTimeMillis() + RefreshProvider.DURATION.toMillis()));
                         }));
             } else {
                 sessionRepository.delete(session);

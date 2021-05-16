@@ -61,12 +61,14 @@ public class User extends AuditModel<User> {
 
     @JsonIgnore
     @Setter(AccessLevel.NONE)
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Category> categories = new HashSet<>();
     
     @JsonIgnore
     @Setter(AccessLevel.NONE)
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Session> sessions = new HashSet<>();

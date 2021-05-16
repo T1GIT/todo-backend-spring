@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public abstract class RefreshProvider {
 
-    private final static Duration DURATION = Duration.ofDays(30);
+    public final static Duration DURATION = Duration.ofDays(90);
 //    private final static String TOKEN_NAME = KeyGenerator.string(KeyLength.REFRESH_NAME); TODO: uncomment
     private final static String TOKEN_NAME = "REFRESH";
 

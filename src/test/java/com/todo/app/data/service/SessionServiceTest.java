@@ -21,23 +21,15 @@ import javax.transaction.Transactional;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = TodoApplication.class)
-@RunWith(SpringRunner.class)
-@AutoConfigureMockMvc
+@SpringBootTest(classes = TodoApplication.class)
 @TestPropertySource("classpath:application_test.properties")
-@EnableTransactionManagement
-@EnableAutoConfiguration
-@Transactional
 class SessionServiceTest {
 
     static User user;
     static String fingerprint = "f".repeat(32);
 
     @Autowired UserService userService;
-    @Autowired
-    SessionService sessionService;
+    @Autowired SessionService sessionService;
 
     @BeforeEach
     void beforeEach() {
@@ -55,9 +47,9 @@ class SessionServiceTest {
     @Test
     void create() {
         Session session = sessionService.create(user.getId(), fingerprint);
-        System.out.println(session);
         assertNotNull(session);
         assertEquals(KeyLength.REFRESH.getLength(), session.getRefresh().length());
+        System.out.println(session);
     }
 
     @Test
@@ -67,6 +59,7 @@ class SessionServiceTest {
         Session newSession = sessionService.update(session.getRefresh(), fingerprint);
         assertNotEquals(oldValue, newSession.getRefresh());
         assertEquals(KeyLength.REFRESH.getLength(), newSession.getRefresh().length());
+        System.out.println(session);
     }
 
     @Test
@@ -74,5 +67,6 @@ class SessionServiceTest {
         Session session = sessionService.create(user.getId(), fingerprint);
         sessionService.delete(session.getRefresh());
         assertDoesNotThrow(() -> sessionService.delete(session.getRefresh()));
+        System.out.println(session);
     }
 }

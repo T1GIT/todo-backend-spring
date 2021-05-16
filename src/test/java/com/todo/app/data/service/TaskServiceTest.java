@@ -25,14 +25,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = TodoApplication.class)
-@RunWith(SpringRunner.class)
-@AutoConfigureMockMvc
+@SpringBootTest(classes = TodoApplication.class)
 @TestPropertySource("classpath:application_test.properties")
-@EnableTransactionManagement
-@EnableAutoConfiguration
 class TaskServiceTest {
 
     static User user;
@@ -112,6 +106,7 @@ class TaskServiceTest {
                 .edit(c -> c.setTitle(title)));
         taskService.delete(user.getId(), task.getId());
         assertDoesNotThrow(() -> taskService.delete(user.getId(), task.getId()));
+        System.out.println(task);
     }
 
     @Test

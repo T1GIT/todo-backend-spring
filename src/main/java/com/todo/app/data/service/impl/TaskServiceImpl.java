@@ -8,6 +8,7 @@ import com.todo.app.data.repo.TaskRepository;
 import com.todo.app.data.service.TaskService;
 import com.todo.app.data.util.base.AbstractModel;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -27,11 +29,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> getOf(long userId, long categoryId) {
-        return categoryRepository.findById(categoryId).map(category -> {
-            List<Task> taskList = new ArrayList<>(category.getTasks());
-            taskList.sort(Comparator.comparingLong(AbstractModel::getId));
-            return taskList;
-        }).orElseThrow(() -> new ResourceNotFoundException(Category.class, categoryId));
+        return categoryRepository.findById(categoryId).map(category ->
+                category.getTasks().stream()
+                        .map(c -> Hibernate.unproxy(c, Task.class))
+                        .sorted(Comparator.comparingLong(AbstractModel::getId))
+                        .collect(Collectors.toList())
+        ).orElseThrow(() -> new ResourceNotFoundException(Category.class, categoryId));
     }
 
     @Override

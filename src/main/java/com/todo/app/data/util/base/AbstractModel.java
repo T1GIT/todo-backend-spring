@@ -9,14 +9,14 @@ import java.io.Serializable;
 import java.util.function.Consumer;
 
 
-
-@Data
 @NoArgsConstructor
+@Data
 @MappedSuperclass
 @JsonIgnoreProperties(value = "id")
 public abstract class AbstractModel<T extends AbstractModel<T>> implements Serializable {
 
     @ApiModelProperty(name = "id", position = -1, accessMode = ApiModelProperty.AccessMode.READ_ONLY, example = "1")
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected long id;

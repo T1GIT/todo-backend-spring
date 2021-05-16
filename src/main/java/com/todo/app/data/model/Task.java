@@ -43,8 +43,7 @@ public class Task extends AuditModel<Task> {
     private Date executeDate;
 
     @JsonIgnore
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private Category category;
 
 }

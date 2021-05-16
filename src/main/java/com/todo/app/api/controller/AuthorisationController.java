@@ -2,6 +2,7 @@ package com.todo.app.api.controller;
 
 import com.todo.app.api.util.exception.InvalidEmailException;
 import com.todo.app.api.util.exception.InvalidPswException;
+import com.todo.app.api.util.json.AuthForm;
 import com.todo.app.api.util.json.request.FingerprintJson;
 import com.todo.app.api.util.json.request.LoginFormJson;
 import com.todo.app.api.util.json.request.RegisterFormJson;
@@ -36,13 +37,15 @@ public class AuthorisationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public JwtJson register(
-            @RequestBody RegisterFormJson registerForm,
+            @RequestBody AuthForm form,
             HttpServletResponse response) {
-        if (!Validator.email(registerForm.getEmail()))
-            throw new InvalidEmailException(registerForm.getEmail());
-        if (!Validator.psw(registerForm.getPsw()))
-            throw new InvalidPswException(registerForm.getPsw());
-        return createSession(userService.register(registerForm), registerForm.getFingerprint(), response);
+        User user = form.getUser();
+        String fingerprint = form.getFingerprint();
+        if (!Validator.email(user.getEmail()))
+            throw new InvalidEmailException(user.getEmail());
+        if (!Validator.psw(user.getPsw()))
+            throw new InvalidPswException(user.getPsw());
+        return createSession(userService.register(user), fingerprint, response);
     }
 
     @ResponseStatus(HttpStatus.OK)

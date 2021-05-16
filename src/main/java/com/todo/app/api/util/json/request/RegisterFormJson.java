@@ -22,9 +22,9 @@ public class RegisterFormJson extends User {
     @Getter @Setter
     private String fingerprint;
 
-    @JsonIgnore @Override
+    @JsonIgnore
     public void setId(long id) {
-        super.setId(id);
+        super.id = id;
     }
 
     @JsonIgnore @Override
