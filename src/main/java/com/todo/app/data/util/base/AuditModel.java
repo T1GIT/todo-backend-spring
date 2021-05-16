@@ -2,6 +2,7 @@ package com.todo.app.data.util.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -12,43 +13,23 @@ import javax.persistence.MappedSuperclass;
 import java.util.Date;
 
 
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(value = {"createdAt", "updatedAt"}, allowGetters = true)
 public abstract class AuditModel<T extends AuditModel<T>> extends AbstractModel<T> {
 
     @JsonIgnore
     @CreatedDate
+    @Setter(AccessLevel.NONE)
     @Column(name = "createdAt", nullable = false, updatable = false)
-    private Date createdAt;
-
+    protected Date createdAt = new Date();
 
     @JsonIgnore
     @LastModifiedDate
+    @Setter(AccessLevel.NONE)
     @Column(name = "updatedAt", nullable = false)
-    private Date updatedAt;
+    protected Date updatedAt = new Date();
 
-    public AuditModel() {
-        super();
-    }
-
-    public AuditModel(long id) {
-        super(id);
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    @Override
-    public String toString() {
-        return "AuditModel{" +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
 }

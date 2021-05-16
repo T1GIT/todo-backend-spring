@@ -1,10 +1,8 @@
 package com.todo.app.data.service;
 
 
-import com.todo.app.data.exception.ResourceNotFoundException;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.Category;
-import com.todo.app.data.model.User;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -15,7 +13,7 @@ public interface CategoryService {
 
     Category add(long userId, Category category) throws ResourceNotFoundException;
 
-    void changeName(long categoryId, String newName) throws ResourceNotFoundException;
+    void changeName(long userId, long categoryId, String newName) throws ResourceNotFoundException;
 
-    void delete(long categoryId) throws ResourceNotFoundException;
+    void delete(long userId, long categoryId);
 }

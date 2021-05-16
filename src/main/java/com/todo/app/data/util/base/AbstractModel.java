@@ -1,40 +1,28 @@
 package com.todo.app.data.util.base;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import com.fasterxml.jackson.annotation.*;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.function.Consumer;
 
 
+@NoArgsConstructor
+@Data
 @MappedSuperclass
+@JsonIgnoreProperties(value = "id")
 public abstract class AbstractModel<T extends AbstractModel<T>> implements Serializable {
 
+    @ApiModelProperty(name = "id", position = -1, accessMode = ApiModelProperty.AccessMode.READ_ONLY, example = "1")
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected long id;
 
-    public AbstractModel() {
-    }
-
-    public AbstractModel(long id) {
-        this.id = id;
-    }
-
-    public long getId() {
-        return id;
-    }
-
     public T edit(Consumer<T> editor) {
         editor.accept((T) this);
         return (T) this;
-    }
-
-    @Override
-    public String toString() {
-        return "AbstractEntity{" +
-                "id=" + id +
-                '}';
     }
 }
