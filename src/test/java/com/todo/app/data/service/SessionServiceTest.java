@@ -7,16 +7,9 @@ import com.todo.app.security.util.enums.KeyLength;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import javax.transaction.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SessionServiceTest {
 
     static User user;
-    static String fingerprint = "f".repeat(32);
+    static String fingerprint = "f".repeat(20);
 
     @Autowired UserService userService;
     @Autowired SessionService sessionService;

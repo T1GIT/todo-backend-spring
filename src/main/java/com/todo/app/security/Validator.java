@@ -22,6 +22,12 @@ public abstract class Validator {
             "^(?=.*[0-9])(?=.*[a-zA-Zа-яА-Я]).*$");
 
     /**
+     * RegExp for validating fingerprint
+     */
+    private static final Pattern FINGERPRINT_PATTERN = Pattern.compile(
+            "^[a-zA-Z0-9]*$");
+
+    /**
      * Checks if email is valid
      * <p>
      * Email must:
@@ -51,7 +57,7 @@ public abstract class Validator {
      * </ul>
      *
      * @param psw raw password string
-     * @return true if password is invalid
+     * @return true if password is valid
      */
     public static boolean psw(final String psw) {
         return PSW_PATTERN.matcher(psw).matches() &&
@@ -59,4 +65,21 @@ public abstract class Validator {
                 psw.length() <= 120;
     }
 
+    /**
+     * Checks if fingerprint is valid
+     * <p>
+     * Fingerprint must:
+     * <ul>
+     * <li> contain only uppercase, lowercase latin symbols and numerics
+     * <li> have length equal 20
+     * </ul>
+     *
+     * @param fingerprint fingerprint string
+     * @return true if fingerprint is valid
+     */
+    public static boolean fingerprint(final String fingerprint) {
+        return FINGERPRINT_PATTERN.matcher(fingerprint).matches() &&
+                fingerprint.length() >= 10 &&
+                fingerprint.length() <= 50;
+    }
 }

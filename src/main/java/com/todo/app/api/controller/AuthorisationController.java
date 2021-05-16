@@ -1,7 +1,8 @@
 package com.todo.app.api.controller;
 
-import com.todo.app.api.util.exception.InvalidEmailException;
-import com.todo.app.api.util.exception.InvalidPswException;
+import com.todo.app.api.util.exception.IncorrectEmailException;
+import com.todo.app.api.util.exception.IncorrectFingerprintException;
+import com.todo.app.api.util.exception.IncorrectPswException;
 import com.todo.app.api.util.json.request.AuthForm;
 import com.todo.app.api.util.json.response.JwtJson;
 import com.todo.app.data.model.Session;
@@ -34,29 +35,21 @@ public class AuthorisationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public JwtJson register(
-            @RequestBody AuthForm form,
+            @RequestBody AuthForm authForm,
             HttpServletResponse response) {
-        User user = form.getUser();
-        String fingerprint = form.getFingerprint();
-        if (!Validator.email(user.getEmail()))
-            throw new InvalidEmailException(user.getEmail());
-        if (!Validator.psw(user.getPsw()))
-            throw new InvalidPswException(user.getPsw());
-        return createSession(userService.register(user), fingerprint, response);
+        validateAuthForm(authForm);
+        User user = userService.register(authForm.getUser());
+        return createSession(user, authForm.getFingerprint(), response);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public JwtJson login(
-            @RequestBody AuthForm form,
+            @RequestBody AuthForm authForm,
             HttpServletResponse response) {
-        User user = form.getUser();
-        String fingerprint = form.getFingerprint();
-        if (!Validator.email(user.getEmail()))
-            throw new InvalidEmailException(user.getEmail());
-        if (!Validator.psw(user.getPsw()))
-            throw new InvalidPswException(user.getPsw());
-        return createSession(userService.login(user), fingerprint, response);
+        validateAuthForm(authForm);
+        User user = userService.login(authForm.getUser());
+        return createSession(user, authForm.getFingerprint(), response);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -72,6 +65,17 @@ public class AuthorisationController {
             @RequestBody Session session,
             HttpServletRequest request, HttpServletResponse response) {
         return updateSession(session.getFingerprint(), request, response);
+    }
+
+    private void validateAuthForm(AuthForm form) {
+        User user = form.getUser();
+        String fingerprint = form.getFingerprint();
+        if (!Validator.email(user.getEmail()))
+            throw new IncorrectEmailException(user.getEmail());
+        if (!Validator.psw(user.getPsw()))
+            throw new IncorrectPswException(user.getPsw());
+        if (!Validator.fingerprint(fingerprint))
+            throw new IncorrectFingerprintException(fingerprint);
     }
 
     private JwtJson createSession(User user, String fingerprint, HttpServletResponse response) {

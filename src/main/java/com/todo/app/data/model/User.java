@@ -10,8 +10,12 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-import java.util.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @ApiModel
@@ -24,14 +28,14 @@ import java.util.*;
 public class User extends AuditModel<User> {
 
     @ApiModelProperty(position = 0, example = "example@mail.ru")
-    @NotNull
+    @NotBlank
     @Size(min = 7, max = 255)
     @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,63})$")
     @Column(unique = true, nullable = false, length = 256)
     protected String email;
 
     @ApiModelProperty(position = 1, example = "password1")
-    @NotNull
+    @NotBlank
     @Size(min = 8, max = 1181)
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Zа-яА-Я]).*$")
     @Column(nullable = false, length = 1181)

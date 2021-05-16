@@ -6,7 +6,6 @@ import com.todo.app.security.token.JwtProvider;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -27,7 +26,7 @@ public class AdminController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/user/{userId}/role")
-    public User setRole(
+    public User changeRole(
             @PathVariable long userId,
             @RequestBody User user) {
         return adminService.changeRole(userId, user.getRole());
