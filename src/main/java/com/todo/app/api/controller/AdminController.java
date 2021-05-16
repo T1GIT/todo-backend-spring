@@ -19,16 +19,16 @@ public class AdminController {
     private final AdminService adminService;
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PostMapping("/jwt/update/key")
+    @PostMapping("/update-jwt-key")
     public void updateJwtKey() {
         JwtProvider.updateKey();
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping("/user/{userId}/role")
-    public User changeRole(
+    public void changeRole(
             @PathVariable long userId,
             @RequestBody User user) {
-        return adminService.changeRole(userId, user.getRole());
+        adminService.changeRole(userId, user.getRole());
     }
 }

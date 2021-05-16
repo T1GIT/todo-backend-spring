@@ -8,11 +8,7 @@ import com.todo.app.security.util.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -23,8 +19,8 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
 
     @Override
-    public User changeRole(long userId, Role role) {
-        return userRepository.saveAndFlush(
+    public void changeRole(long userId, Role role) {
+        userRepository.saveAndFlush(
                 userRepository.findById(userId).map(user ->
                         user.edit(u -> u.setRole(role))
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));

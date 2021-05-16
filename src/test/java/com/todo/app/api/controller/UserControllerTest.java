@@ -34,6 +34,7 @@ class UserControllerTest {
     static String email = "example@mail.ru";
     static String invalidEmail = "example mail.ru";
     static String anotherEmail = "example1@mail.ru";
+
     static String psw = "password1";
     static String invalidPsw = "password";
     static String anotherPsw = "password12";

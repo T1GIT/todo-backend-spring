@@ -20,8 +20,7 @@ public abstract class JwtProvider {
 
     public final static Duration DURATION = Duration.ofHours(1);
 
-    private static Key KEY = Keys.hmacShaKeyFor(KeyGenerator.bytes(KeyLength.JWT_KEY));
-
+    public static Key KEY = Keys.hmacShaKeyFor(KeyGenerator.bytes(KeyLength.JWT_KEY));
 
     public static String getJwt(User user) {
         return Jwts.builder()

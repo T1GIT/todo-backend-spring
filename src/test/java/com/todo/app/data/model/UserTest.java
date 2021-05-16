@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class UserTest {
 
-    static Date date = new Date();
+    static Date date = new Date(System.currentTimeMillis());
 
     static User user = new User() {{
         setEmail("example@mail.com");
