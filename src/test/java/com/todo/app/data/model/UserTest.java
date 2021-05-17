@@ -5,11 +5,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class UserTest {
 
-    static Date date = new Date();
+    static Date date = new Date(System.currentTimeMillis());
 
     static User user = new User() {{
         setEmail("example@mail.com");
@@ -64,5 +65,4 @@ class UserTest {
         System.out.println(almostSameUser);
         System.out.println(anotherUser);
     }
-
 }

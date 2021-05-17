@@ -1,12 +1,10 @@
 package com.todo.app.api.util;
 
 import com.todo.app.TodoApplication;
-import org.springframework.boot.context.config.ConfigData;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -51,12 +49,11 @@ public abstract class CookieUtil {
      * @return value of the cookie or null if cookie was not found
      */
     public static String get(HttpServletRequest request, String name) {
-        return Optional.ofNullable(request.getCookies()).map(
+        return Optional.ofNullable(request.getCookies()).flatMap(
                 cookies -> Arrays.stream(cookies)
-                        .filter(c -> c.getName().equals("REFRESH")).findAny()
+                        .filter(c -> c.getName().equals(name)).findAny()
                         .map(Cookie::getValue)
-                        .orElse(null))
-                .orElse(null);
+        ).orElse(null);
     }
 
     /**
@@ -67,13 +64,25 @@ public abstract class CookieUtil {
      * @param value     of the cookie
      * @param expiresIn life time of the cookie in seconds
      */
-    public static void add(HttpServletResponse response, String name, Object value, long expiresIn) {
+    public static void add(HttpServletResponse response, String name, String value, long expiresIn) {
         response.addCookie(
-                new Cookie(encode(name), encode(String.valueOf(value))) {{
+                new Cookie(encode(name), encode(value)) {{
                     setHttpOnly(true);
                     setMaxAge((int) expiresIn);
                     setDomain(TodoApplication.DOMAIN);
-        }});
+                }});
+    }
+
+    /**
+     * Creates, configures and adds cookie object to the response.
+     * Gives to it maximum expiring time.
+     *
+     * @param response target to add cookie
+     * @param name     of the cookie
+     * @param value    of the cookie
+     */
+    public static void add(HttpServletResponse response, String name, String value) {
+        add(response, name, value, Integer.MAX_VALUE);
     }
 
     /**
@@ -83,6 +92,6 @@ public abstract class CookieUtil {
      * @param name     of the cookie to delete
      */
     public static void remove(HttpServletResponse response, String name) {
-        add(response, name, null, 0);
+        add(response, name, "", 0);
     }
 }

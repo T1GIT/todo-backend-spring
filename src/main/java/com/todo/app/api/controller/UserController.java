@@ -1,11 +1,11 @@
 package com.todo.app.api.controller;
 
-import com.todo.app.api.util.exception.InvalidEmailException;
-import com.todo.app.api.util.exception.InvalidPswException;
+import com.todo.app.api.util.exception.IncorrectEmailException;
+import com.todo.app.api.util.exception.IncorrectPswException;
 import com.todo.app.data.model.User;
 import com.todo.app.data.service.UserService;
-import com.todo.app.security.auth.AuthContext;
 import com.todo.app.security.Validator;
+import com.todo.app.security.auth.AuthContext;
 import com.todo.app.security.token.RefreshProvider;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class UserController {
             @ApiParam(value = "DESC")
             @RequestBody User user) {
         if (!Validator.email(user.getEmail()))
-            throw new InvalidEmailException(user.getEmail());
+            throw new IncorrectEmailException(user.getEmail());
         userService.changeEmail(authContext.getUser().getId(), user.getEmail());
     }
 
@@ -43,7 +43,7 @@ public class UserController {
     public void changePsw(
             @RequestBody User user) {
         if (!Validator.psw(user.getPsw()))
-            throw new InvalidPswException(user.getPsw());
+            throw new IncorrectPswException(user.getPsw());
         userService.changePsw(authContext.getUser().getId(), user.getPsw());
     }
 

@@ -11,7 +11,6 @@ import com.todo.app.security.token.RefreshProvider;
 import com.todo.app.security.util.enums.KeyLength;
 import com.todo.app.security.util.exception.InvalidFingerprintException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -29,14 +28,15 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public Session create(long userId, String fingerprint) throws ResourceNotFoundException {
         return sessionRepository.saveAndFlush(
-                userRepository.findById(userId).map(user ->
-                        new Session().edit(s -> {
-                            s.setRefresh(genValue());
-                            s.setExpires(new Date(System.currentTimeMillis() + RefreshProvider.DURATION.toMillis()));
-                            s.setFingerprint(fingerprint);
-                            user.addSession(s);
-                        })
-                ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
+                userRepository.findById(userId).map(user -> {
+                    sessionRepository.findByFingerprint(fingerprint).ifPresent(sessionRepository::delete);
+                    return new Session().edit(s -> {
+                        s.setRefresh(genValue());
+                        s.setExpires(new Date(System.currentTimeMillis() + RefreshProvider.DURATION.toMillis()));
+                        s.setFingerprint(fingerprint);
+                        user.addSession(s);
+                    });
+                }).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }
 
     @Override

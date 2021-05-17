@@ -1,10 +1,15 @@
 package com.todo.app.data.util.base;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.util.function.Consumer;
 
@@ -12,7 +17,7 @@ import java.util.function.Consumer;
 @NoArgsConstructor
 @Data
 @MappedSuperclass
-@JsonIgnoreProperties(value = "id")
+@JsonIgnoreProperties(value = "id", allowGetters = true, ignoreUnknown = true)
 public abstract class AbstractModel<T extends AbstractModel<T>> implements Serializable {
 
     @ApiModelProperty(name = "id", position = -1, accessMode = ApiModelProperty.AccessMode.READ_ONLY, example = "1")
