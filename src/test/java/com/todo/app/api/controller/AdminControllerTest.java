@@ -20,6 +20,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.transaction.Transactional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -28,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = TodoApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource("classpath:application_test.properties")
+@Transactional
 class AdminControllerTest {
 
 
@@ -80,5 +84,35 @@ class AdminControllerTest {
                 .post("/admin/update-jwt-key")
                 .header("authorization", "Bearer " + jwt))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void changeRole() throws Exception {
+        String someEmail = "some@mail.ru";
+        User user = new User().edit(u -> {
+            u.setEmail(someEmail);
+            u.setPsw("some password 1");
+            u.setRole(Role.BASIC);
+        });
+        user = userRepository.saveAndFlush(user);
+        assertEquals(Role.BASIC, user.getRole());
+        mvc.perform(MockMvcRequestBuilders
+                .patch("/admin/user/" + user.getId() + "/role")
+                .header("authorization", "Bearer " + jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(parser.toJson(new User().edit(u -> u.setRole(Role.ADMIN)))))
+                .andExpect(status().isNoContent());
+        user = userRepository.findByEmail(someEmail).get();
+        assertEquals(Role.ADMIN, user.getRole());
+        mvc.perform(MockMvcRequestBuilders
+                .patch("/admin/user/" + user.getId() + "/role")
+                .header("authorization", "Bearer " + jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(parser.toJson(new User().edit(u -> u.setRole(Role.BASIC)))))
+                .andExpect(status().isNoContent());
+        user = userRepository.findByEmail(someEmail).get();
+        assertEquals(Role.BASIC, user.getRole());
     }
 }
