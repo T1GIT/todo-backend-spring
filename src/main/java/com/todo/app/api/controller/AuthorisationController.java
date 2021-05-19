@@ -22,13 +22,11 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-@RestControllerAdvice
 @Tag(name = "Authorisation controller",
         description = "Controller to provide an authorisation process")
 @RequestMapping("/authorisation")
@@ -139,19 +137,6 @@ public interface AuthorisationController {
             description = "Gets fingerprint and the refresh token from the cookie, " +
                     "creates new JWT and refresh token? and responses with new JWT, " +
                     "attaches new refresh token to the cookies")
-    @RequestBody(
-            description = "JSON with fingerprint",
-            content = @Content(
-                    examples = @ExampleObject(
-                            name = "Fingerprint",
-                            description = "Gives json object, containing fingerprint",
-                            value = """
-                                      {
-                                      "fingerprint": "WfLf40GtRol24T7NDNtC",
-                                    }"""
-                    )
-            )
-    )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Tokens were successfully updated"),
             @ApiResponse(responseCode = "401", description = "Fingerprint is invalid or refresh token was expired", content = @Content),

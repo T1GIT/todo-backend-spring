@@ -30,17 +30,14 @@ public class AuthorisationControllerImpl implements AuthorisationController {
 
     @Override
     public JwtJson register(
-            @RequestBody AuthForm authForm,
-            HttpServletResponse response) {
+            @RequestBody AuthForm authForm, HttpServletResponse response) {
         validateAuthForm(authForm);
         User user = userService.register(authForm.getUser());
         return createSession(user, authForm.getFingerprint(), response);
     }
 
     @Override
-    public JwtJson login(
-            @RequestBody AuthForm authForm,
-            HttpServletResponse response) {
+    public JwtJson login(@RequestBody AuthForm authForm, HttpServletResponse response) {
         validateAuthForm(authForm);
         User user = userService.login(authForm.getUser());
         return createSession(user, authForm.getFingerprint(), response);
@@ -53,9 +50,7 @@ public class AuthorisationControllerImpl implements AuthorisationController {
     }
 
     @Override
-    public JwtJson refresh(
-            @RequestBody Session session,
-            HttpServletRequest request, HttpServletResponse response) {
+    public JwtJson refresh(Session session, HttpServletRequest request, HttpServletResponse response) {
         return updateSession(session.getFingerprint(), request, response);
     }
 

@@ -45,7 +45,7 @@ public class SessionServiceImpl implements SessionService {
         return sessionRepository.findByRefresh(refresh).map(session -> {
             if (session.getExpires().compareTo(new Date()) < 0)
                 throw new ExpiredRefreshException(session.getId(), session.getRefresh());
-            if (session.getFingerprint().equals(fingerprint))
+            if (!session.getFingerprint().equals(fingerprint))
                 throw new InvalidFingerprintException(session, fingerprint);
             return sessionRepository.saveAndFlush(
                     session.edit(s -> {
