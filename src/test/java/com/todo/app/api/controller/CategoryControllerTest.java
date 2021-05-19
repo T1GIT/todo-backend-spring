@@ -99,11 +99,10 @@ class CategoryControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .content(createCategoryJson(name)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.name").exists())
+                .andExpect(header().exists("location"))
                 .andReturn();
-        String body = result.getResponse().getContentAsString();
-        long categoryId = parser.fromJson(body, Category.class).getId();
+        String location = result.getResponse().getHeader("location");
+        long categoryId = Long.parseLong(location.substring(location.lastIndexOf("/") + 1));
         long userId = userRepository.findByEmail(email).get().getId();
         Category category = categoryRepository.findByUserIdAndId(userId, categoryId).orElse(null);
         assertNotNull(category);

@@ -52,7 +52,7 @@ public abstract class CookieUtil {
         return Optional.ofNullable(request.getCookies()).flatMap(
                 cookies -> Arrays.stream(cookies)
                         .filter(c -> c.getName().equals(name)).findAny()
-                        .map(Cookie::getValue)
+                        .map(c -> decode(c.getValue()))
         ).orElse(null);
     }
 

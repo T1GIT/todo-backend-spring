@@ -84,11 +84,10 @@ class TaskControllerTest {
                     c.setName("category");
                 }))))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.name").exists())
+                .andExpect(header().exists("location"))
                 .andReturn();
-        String body = result.getResponse().getContentAsString();
-        categoryId = parser.fromJson(body, Category.class).getId();
+        String location = result.getResponse().getHeader("location");
+        categoryId = Long.parseLong(location.substring(location.lastIndexOf("/") + 1));
     }
 
     @AfterEach
@@ -192,7 +191,8 @@ class TaskControllerTest {
                 }))))
                 .andExpect(status().isCreated())
                 .andReturn();
-        String body = result.getResponse().getContentAsString();
-        return parser.fromJson(body, Task.class).getId();
+
+        String location = result.getResponse().getHeader("location");
+        return Long.parseLong(location.substring(location.lastIndexOf("/") + 1));
     }
 }

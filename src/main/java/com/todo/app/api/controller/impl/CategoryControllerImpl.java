@@ -1,26 +1,26 @@
-package com.todo.app.api.controller;
+package com.todo.app.api.controller.impl;
 
 import com.todo.app.data.model.Category;
 import com.todo.app.data.service.CategoryService;
 import com.todo.app.security.auth.AuthContext;
-import com.todo.app.security.auth.AuthUser;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 
-@Api(tags = "Category controller",
+@Tag(name = "Category controller",
         description = "Controller to provide operations with category models")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/todo")
-public class CategoryController {
+public class CategoryControllerImpl {
 
     private final CategoryService categoryService;
     private final AuthContext authContext;
@@ -33,9 +33,12 @@ public class CategoryController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Category addCategory(
-            @RequestBody Category category) {
-        return categoryService.add(authContext.getUser().getId(), category);
+    public ResponseEntity<Void> addCategory(
+            @RequestBody Category category) throws URISyntaxException {
+        categoryService.add(authContext.getUser().getId(), category);
+        return ResponseEntity
+                .created(new URI("category/" + category.getId()))
+                .build();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -43,13 +46,18 @@ public class CategoryController {
     public void changeName(
             @PathVariable long categoryId,
             @RequestBody Category category) {
-        categoryService.changeName(authContext.getUser().getId(), categoryId, category.getName());
+        categoryService.changeName(
+                authContext.getUser().getId(),
+                categoryId,
+                category.getName());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/category/{categoryId}")
     public void deleteCategory(
             @PathVariable long categoryId) {
-        categoryService.delete(authContext.getUser().getId(), categoryId);
+        categoryService.delete(
+                authContext.getUser().getId(),
+                categoryId);
     }
 }

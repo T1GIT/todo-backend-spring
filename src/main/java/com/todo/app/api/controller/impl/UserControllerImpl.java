@@ -1,4 +1,4 @@
-package com.todo.app.api.controller;
+package com.todo.app.api.controller.impl;
 
 import com.todo.app.api.util.exception.IncorrectEmailException;
 import com.todo.app.api.util.exception.IncorrectPswException;
@@ -7,7 +7,8 @@ import com.todo.app.data.service.UserService;
 import com.todo.app.security.Validator;
 import com.todo.app.security.auth.AuthContext;
 import com.todo.app.security.token.RefreshProvider;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,28 +17,26 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 
 
-@Api(tags = "User controller",
-        description = "Provides operations with user models")
+@Tag(name = "User controller",
+        description = "Controller to provide operations with user models")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class UserControllerImpl {
 
     private final UserService userService;
     private final AuthContext authContext;
 
-    @ApiOperation("Validates and changes user email address")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping(value = "/email", produces = MediaType.APPLICATION_JSON_VALUE)
     public void changeEmail(
-            @ApiParam(value = "DESC")
+            @Parameter(description = "DESC")
             @RequestBody User user) {
         if (!Validator.email(user.getEmail()))
             throw new IncorrectEmailException(user.getEmail());
         userService.changeEmail(authContext.getUser().getId(), user.getEmail());
     }
 
-    @ApiOperation("Validates and changes user's password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping(value = "/psw", produces = MediaType.APPLICATION_JSON_VALUE)
     public void changePsw(
@@ -47,7 +46,6 @@ public class UserController {
         userService.changePsw(authContext.getUser().getId(), user.getPsw());
     }
 
-    @ApiOperation("Updates information about the user")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping()
     public void updateUser(
@@ -55,10 +53,6 @@ public class UserController {
         userService.update(authContext.getUser().getId(), user);
     }
 
-    @ApiOperation("Deletes the user")
-    @ApiResponses({
-            @ApiResponse(code = 204, message = "Entity was deleted or not existed")
-    })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping()
     public void deleteUser(HttpServletResponse response) {

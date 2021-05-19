@@ -1,20 +1,20 @@
-package com.todo.app.api.controller;
+package com.todo.app.api.controller.impl;
 
 import com.todo.app.data.model.User;
 import com.todo.app.data.service.AdminService;
 import com.todo.app.security.token.JwtProvider;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 
-@Api(tags = "Administrator controller",
+@Tag(name = "Administrator controller",
         description = "Controller to execute administrative functions")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/admin")
-public class AdminController {
+public class AdminControllerImpl {
 
     private final AdminService adminService;
 

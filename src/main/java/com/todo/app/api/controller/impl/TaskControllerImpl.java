@@ -1,23 +1,29 @@
-package com.todo.app.api.controller;
+package com.todo.app.api.controller.impl;
 
+import com.todo.app.api.config.SwaggerConfig;
 import com.todo.app.data.model.Task;
 import com.todo.app.data.service.TaskService;
 import com.todo.app.security.auth.AuthContext;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 
-@Api(tags = "Task controller",
+@Tag(name = "Task controller",
         description = "Controller to provide operations with task models")
+@SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME)
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/todo")
-public class TaskController {
+public class TaskControllerImpl {
 
     private final TaskService taskService;
     private final AuthContext authContext;
@@ -31,10 +37,13 @@ public class TaskController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/category/{categoryId}/task", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Task addTask(
+    public ResponseEntity<Void> addTask(
             @PathVariable long categoryId,
-            @RequestBody Task task) {
-        return taskService.add(authContext.getUser().getId(), categoryId, task);
+            @RequestBody Task task) throws URISyntaxException {
+        taskService.add(authContext.getUser().getId(), categoryId, task);
+        return ResponseEntity
+                .created(new URI("task/" + task.getId()))
+                .build();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

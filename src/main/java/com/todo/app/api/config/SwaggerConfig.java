@@ -1,77 +1,79 @@
 package com.todo.app.api.config;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springdoc.core.GroupedOpenApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.*;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spi.service.contexts.SecurityContext;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.util.Collections;
 import java.util.List;
 
 
 @Configuration
-@EnableSwagger2
-@Import(BeanValidatorPluginsConfiguration.class)
-public class SwaggerConfig extends WebMvcConfigurationSupport {
+public class SwaggerConfig {
+
+    public static final String SECURITY_SCHEME = "JWT authentication";
 
     @Bean
-    public Docket productApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(metaData())
-                .securityContexts(securityContexts())
-                .securitySchemes(apiKeys())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.todo.app.api.controller"))
-                .paths(PathSelectors.any())
+    public OpenAPI apiInfo(@Value("${server.servlet.context-path}") String contextPath) {
+        return new OpenAPI()
+                .components(securityComponent())
+                .info(new Info()
+                        .title("TODO REST API")
+                        .description("Restful api for creating tasks")
+                        .version("v0.1")
+                        .license(new License()
+                                .name("Apache 2.0")
+                                .url("http://springdoc.org")) // TODO: Add license
+                        .contact(new Contact()
+                                .name("Derbin Dmitriy")
+                                .email("derbindima5@gmail.com")
+                                .url("https://github.com/t1git")))
+                .servers(List.of(
+                        new Server()
+                                .url("http://localhost:8080" + contextPath)
+                                .description("Dev server")));
+    }
+
+    @Bean
+    public GroupedOpenApi authorisationApi() {
+        return GroupedOpenApi.builder()
+                .group("Authorisation")
+                .pathsToMatch("/authorisation/**")
                 .build();
     }
 
-    private ApiInfo metaData() {
-        return new ApiInfoBuilder()
-                .title("TODO REST API")
-                .description("This is server API allows creating users, theirs categories and tasks")
-                .version("v0.1")
-                .license("Apache License Version 2.0") // TODO: put license type
-                .licenseUrl("https://www.apache.org/licenses/LICENSE-2.0\"") // TODO: put license url
-                .contact(new Contact("Dmitriy Derbin", "http://vk.com/t1monvk", "derbindima5@gmail.com"))
-                .termsOfServiceUrl("Все права защищены (нет)")
+    @Bean
+    public GroupedOpenApi AdminApi() {
+        return GroupedOpenApi.builder()
+                .group("Administration")
+                .pathsToMatch("/admin/**")
                 .build();
     }
 
-    private List<ApiKey> apiKeys() {
-        return Collections.singletonList(
-                new ApiKey("JWT", "authorization", "header"));
+    @Bean
+    public GroupedOpenApi TodoApi() {
+        return GroupedOpenApi.builder()
+                .group("Todo")
+                .pathsToMatch("/todo/**")
+                .build();
     }
 
-    private List<SecurityContext> securityContexts() {
-        return Collections.singletonList(
-                SecurityContext.builder().securityReferences(defaultAuth()).build());
-    }
-
-    private List<SecurityReference> defaultAuth() {
-        return Collections.singletonList(
-                new SecurityReference(
-                        "JWT",
-                        new AuthorizationScope[]{
-                                new AuthorizationScope("BASIC", "access TODO api"),
-                                new AuthorizationScope("ADMIN", "access administrative functionality")}));
-    }
-
-    @Override
-    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+    private Components securityComponent() {
+        return new Components()
+                .addSecuritySchemes(
+                        SECURITY_SCHEME,
+                        new SecurityScheme()
+                                .name(SECURITY_SCHEME)
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                );
     }
 }
