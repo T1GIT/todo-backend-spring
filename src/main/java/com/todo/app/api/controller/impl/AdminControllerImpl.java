@@ -1,8 +1,10 @@
 package com.todo.app.api.controller.impl;
 
+import com.todo.app.api.config.SwaggerConfig;
 import com.todo.app.data.model.User;
 import com.todo.app.data.service.AdminService;
 import com.todo.app.security.token.JwtProvider;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Administrator controller",
         description = "Controller to execute administrative functions")
+@SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME)
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/admin")

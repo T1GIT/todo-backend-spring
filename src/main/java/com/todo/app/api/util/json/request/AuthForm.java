@@ -11,8 +11,8 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 
+@Schema(description = "Form for authorising with fingerprint and user object")
 @Data
-@Schema
 public class AuthForm implements Serializable {
 
     @Schema(example = "WfLf40GtRol24T7NDNtC")

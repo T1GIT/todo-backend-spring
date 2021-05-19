@@ -1,8 +1,10 @@
 package com.todo.app.api.controller.impl;
 
+import com.todo.app.api.config.SwaggerConfig;
 import com.todo.app.data.model.Category;
 import com.todo.app.data.service.CategoryService;
 import com.todo.app.security.auth.AuthContext;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import java.util.List;
 
 @Tag(name = "Category controller",
         description = "Controller to provide operations with category models")
+@SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME)
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/todo")

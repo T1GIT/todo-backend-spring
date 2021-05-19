@@ -6,11 +6,12 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+
+@Schema(description = "JSON object for sending JWT")
 @Data
-@Schema
 public class JwtJson implements Serializable {
 
-    @Schema(example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZW1haWwiOiJleGFtcGxlQG1haWwucnUiLCJwc3ciOiJwYXNzd29yZDEiLCJpYXQiOjE1MTYyMzkwMjJ9.IpsL7WJp9VoCm6fj8Ns8qZ4tzIn4D29QEKle26Qx4Wk")
+    @Schema(example = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1MTYyMzkwMjJ9.tCf7xgMgzyICPepwICOMPvUXycj_omP0EPCvf1IVWcc")
     @NotNull
     private String jwt;
 }

@@ -1,8 +1,15 @@
 package com.todo.app.api.controller;
 
+import com.todo.app.api.util.base.IncorrectFormException;
 import com.todo.app.api.util.json.request.AuthForm;
 import com.todo.app.api.util.json.response.JwtJson;
 import com.todo.app.data.model.Session;
+import com.todo.app.data.util.exception.EmailExistsException;
+import com.todo.app.data.util.exception.EmailNotExistsException;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
+import com.todo.app.security.util.exception.ExpiredRefreshException;
+import com.todo.app.security.util.exception.InvalidFingerprintException;
+import com.todo.app.security.util.exception.InvalidPswException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -27,11 +34,12 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/authorisation")
 public interface AuthorisationController {
 
-    @Operation(description = "Registers the user and responses JWT")
+    @Operation(
+            description = "Adds user info in the database, creates session " +
+                    "and attaches session refresh token to the cookies, responses JWT")
     @RequestBody(
             description = "Form for receiving user's principles from the client",
             content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
                     examples = {
                             @ExampleObject(
                                     name = "Basic info",
@@ -66,40 +74,96 @@ public interface AuthorisationController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "User was created"),
-            @ApiResponse(responseCode = "422", description = "Some of the credentials is invalid"),
-            @ApiResponse(responseCode = "409", description = "Given email does already exist")
+            @ApiResponse(responseCode = "409", description = "Given email does already exist", content = @Content),
+            @ApiResponse(responseCode = "422", description = "Some of the credentials is incorrect", content = @Content)
     })
-    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+            value = "/register",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    JwtJson register(@RequestBody AuthForm authForm, HttpServletResponse response);
+    JwtJson register(
+            @RequestBody AuthForm authForm,
+            HttpServletResponse response)
+            throws EmailExistsException, IncorrectFormException;
 
+    @Operation(
+            description = "Creates session and attaches session refresh to" +
+                    "the cookies, responses JWT")
     @RequestBody(
-            description = "desc",
+            description = "Form for receiving user's principles from the client",
             content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    examples =
-                            {@ExampleObject(
-                                    name = "NAAAAAAAAAme",
-                                    description = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-                                    value = """
-                                            {
-                                              "email": "example@mail.ru",
-                                              "psw": "password1"
-                                            }"""
-                            )}
-            ))
-    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+                    examples = @ExampleObject(
+                            name = "Default login form",
+                            description = "Gives email, password and fingerprint",
+                            value = """
+                                      {
+                                      "fingerprint": "WfLf40GtRol24T7NDNtC",
+                                      "user": {
+                                        "email": "example@mail.ru",
+                                        "psw": "password1"
+                                      }
+                                    }"""
+                    )
+            )
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User was login"),
+            @ApiResponse(responseCode = "422", description = "Some of the credentials is incorrect", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Given email does not exist", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Password/fingerprint is invalid for this account", content = @Content)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping(
+            value = "/login",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     JwtJson login(
-            AuthForm authForm,
-            HttpServletResponse response);
+            @RequestBody AuthForm authForm,
+            HttpServletResponse response)
+            throws EmailNotExistsException, InvalidPswException, InvalidFingerprintException;
 
+
+    @Operation(
+            description = "Erase all the information about the current authorisation session")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "All session data was cleaned")
+    })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PostMapping("/logout")
+    @PostMapping(
+            value = "/logout",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     void logout(HttpServletRequest request, HttpServletResponse response);
 
+    @Operation(
+            description = "Gets fingerprint and the refresh token from the cookie, " +
+                    "creates new JWT and refresh token? and responses with new JWT, " +
+                    "attaches new refresh token to the cookies")
+    @RequestBody(
+            description = "JSON with fingerprint",
+            content = @Content(
+                    examples = @ExampleObject(
+                            name = "Fingerprint",
+                            description = "Gives json object, containing fingerprint",
+                            value = """
+                                      {
+                                      "fingerprint": "WfLf40GtRol24T7NDNtC",
+                                    }"""
+                    )
+            )
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Tokens were successfully updated"),
+            @ApiResponse(responseCode = "401", description = "Fingerprint is invalid or refresh token was expired", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Refresh token was not found in the database", content = @Content)
+    })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/refresh")
+    @PostMapping(
+            value = "/refresh",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     JwtJson refresh(
             @RequestBody Session session,
-            HttpServletRequest request, HttpServletResponse response);
+            HttpServletRequest request, HttpServletResponse response)
+            throws ResourceNotFoundException, InvalidFingerprintException, ExpiredRefreshException;
 }

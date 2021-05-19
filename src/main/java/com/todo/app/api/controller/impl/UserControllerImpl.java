@@ -1,5 +1,6 @@
 package com.todo.app.api.controller.impl;
 
+import com.todo.app.api.config.SwaggerConfig;
 import com.todo.app.api.util.exception.IncorrectEmailException;
 import com.todo.app.api.util.exception.IncorrectPswException;
 import com.todo.app.data.model.User;
@@ -8,6 +9,7 @@ import com.todo.app.security.Validator;
 import com.todo.app.security.auth.AuthContext;
 import com.todo.app.security.token.RefreshProvider;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Tag(name = "User controller",
         description = "Controller to provide operations with user models")
+@SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME)
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
