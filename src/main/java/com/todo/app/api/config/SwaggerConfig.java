@@ -23,29 +23,18 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI apiInfo(@Value("${server.servlet.context-path}") String contextPath) {
         return new OpenAPI()
-                .components(securityComponent())
-                .info(new Info()
-                        .title("TODO REST API")
-                        .description("Restful api for creating tasks")
-                        .version("v0.1")
-                        .license(new License()
-                                .name("Apache 2.0")
-                                .url("http://springdoc.org")) // TODO: Add license
-                        .contact(new Contact()
-                                .name("Derbin Dmitriy")
-                                .email("derbindima5@gmail.com")
-                                .url("https://github.com/t1git")))
-                .servers(List.of(
-                        new Server()
-                                .url("http://localhost:8080" + contextPath)
-                                .description("Dev server")));
+                .components(apiJwtAuth())
+                .info(apiInfo())
+                .servers(apiServers(contextPath));
     }
 
     @Bean
     public GroupedOpenApi authorisationApi() {
         return GroupedOpenApi.builder()
                 .group("Authorisation")
-                .pathsToMatch("/authorisation/**")
+                .pathsToMatch(
+                        "/authorisation/**",
+                        "/user/**")
                 .build();
     }
 
@@ -65,7 +54,21 @@ public class SwaggerConfig {
                 .build();
     }
 
-    private Components securityComponent() {
+    private Info apiInfo() {
+        return new Info()
+                .title("TODO REST API")
+                .description("Restful api for creating tasks")
+                .version("v0.1")
+                .license(new License()
+                        .name("GPL-3.0")
+                        .url("https://github.com/T1GIT/todo-backend-spring/blob/master/LICENSE.md")) // TODO: Add license
+                .contact(new Contact()
+                        .name("Derbin Dmitriy")
+                        .email("derbindima5@gmail.com")
+                        .url("https://github.com/t1git"));
+    }
+
+    private Components apiJwtAuth() {
         return new Components()
                 .addSecuritySchemes(
                         SECURITY_SCHEME,
@@ -75,5 +78,12 @@ public class SwaggerConfig {
                                 .scheme("bearer")
                                 .bearerFormat("JWT")
                 );
+    }
+
+    private List<Server> apiServers(String contextPath) {
+        return List.of(
+                new Server()
+                        .url("http://localhost:8080" + contextPath)
+                        .description("Dev server"));
     }
 }

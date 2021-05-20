@@ -14,7 +14,6 @@ import com.todo.app.security.Validator;
 import com.todo.app.security.token.JwtProvider;
 import com.todo.app.security.token.RefreshProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,15 +28,14 @@ public class AuthorisationControllerImpl implements AuthorisationController {
     private final SessionService sessionService;
 
     @Override
-    public JwtJson register(
-            @RequestBody AuthForm authForm, HttpServletResponse response) {
+    public JwtJson register(AuthForm authForm, HttpServletResponse response) {
         validateAuthForm(authForm);
         User user = userService.register(authForm.getUser());
         return createSession(user, authForm.getFingerprint(), response);
     }
 
     @Override
-    public JwtJson login(@RequestBody AuthForm authForm, HttpServletResponse response) {
+    public JwtJson login(AuthForm authForm, HttpServletResponse response) {
         validateAuthForm(authForm);
         User user = userService.login(authForm.getUser());
         return createSession(user, authForm.getFingerprint(), response);

@@ -6,7 +6,6 @@ import com.todo.app.data.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,12 +33,11 @@ public interface AdminController {
 
     @Operation(
             description = "Changes role of the given user")
-    @RequestBody(
-            description = "JSON with new role",
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "JSON object with new role",
             content = @Content(
                     examples = @ExampleObject(
                             name = "Role",
-                            description = "Gives json object, containing new role",
                             value = """
                                       {
                                       "role": "ADMIN",
