@@ -10,7 +10,9 @@ import java.util.Optional;
 @Repository
 public interface SessionRepository extends JpaRepository<Session, Long> {
 
-    Optional<Session> findByRefresh(String value);
+    Optional<Session> findByRefresh(String refresh);
+
+    Optional<Session> findByFingerprint(String fingerprint);
 
     boolean existsByRefresh(String value);
 

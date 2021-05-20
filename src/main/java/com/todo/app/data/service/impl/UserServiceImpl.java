@@ -1,15 +1,15 @@
 package com.todo.app.data.service.impl;
 
-import com.todo.app.data.util.exception.EmailExistsException;
-import com.todo.app.data.util.exception.EmailNotExistsException;
-import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.Category;
 import com.todo.app.data.model.User;
 import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.service.UserService;
+import com.todo.app.data.util.exception.EmailExistsException;
+import com.todo.app.data.util.exception.EmailNotExistsException;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.security.crypt.Hash;
 import com.todo.app.security.util.enums.Role;
-import com.todo.app.security.util.exception.IncorrectPswException;
+import com.todo.app.security.util.exception.InvalidPswException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +30,18 @@ public class UserServiceImpl implements UserService {
         return userRepository.saveAndFlush(
                 user.edit(u -> {
                     u.setPsw(Hash.hash(user.getPsw()));
-                    u.addCategory(new Category() {{ setName("Задачи"); }});
+                    u.addCategory(new Category()
+                            .edit(c -> c.setName("Задачи")));
                     u.setRole(Role.BASIC);
                 }));
     }
 
     @Override
-    public User login(User user) throws ResourceNotFoundException, IncorrectPswException {
+    public User login(User user) throws ResourceNotFoundException, InvalidPswException {
         return userRepository.saveAndFlush(
                 userRepository.findByEmail(user.getEmail()).map(foundUser -> {
                     if (!Hash.check(user.getPsw(), foundUser.getPsw()))
-                        throw new IncorrectPswException(user.getEmail());
+                        throw new InvalidPswException(user.getEmail());
                     return foundUser;
                 }).orElseThrow(() -> new EmailNotExistsException(user.getEmail())));
     }
@@ -69,16 +70,24 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAndFlush(
                 userRepository.findById(userId).map(user ->
                         user.edit(u -> {
-                            u.setName(newUser.getName());
-                            u.setSurname(newUser.getSurname());
-                            u.setPatronymic(newUser.getPatronymic());
-                            u.setBirthdate(newUser.getBirthdate());
+                            if (newUser.getName() != null)
+                                u.setName(newUser.getName());
+                            if (newUser.getSurname() != null)
+                                u.setSurname(newUser.getSurname());
+                            if (newUser.getPatronymic() != null)
+                                u.setPatronymic(newUser.getPatronymic());
+                            if (newUser.getBirthdate() != null)
+                                u.setBirthdate(newUser.getBirthdate());
                         })
                 ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }
 
     @Override
     public void delete(long userId) {
-        userRepository.findById(userId).ifPresent(userRepository::delete);
+        userRepository.findById(userId).ifPresentOrElse(
+                userRepository::delete,
+                () -> {
+                    throw new ResourceNotFoundException(User.class, userId);
+                });
     }
 }

@@ -3,19 +3,20 @@ package com.todo.app.data.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.todo.app.data.util.base.AuditModel;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.Example;
-import lombok.*;
-import springfox.documentation.annotations.ApiIgnore;
+import com.todo.app.security.Validator;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
 
-@ApiModel
+@Schema(description = "Representation of the sessions table")
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
@@ -23,20 +24,18 @@ import java.util.Date;
 @Table(name = "sessions")
 public class Session extends AuditModel<Session> {
 
-    @ApiModelProperty(position = 0, example = "fihefUHFUe7EFhuh8987HOfheuhEUg38Hefhus802efF")
-    @NotNull
+    @Schema(example = "WfLf40GtRol24T7NDNtC")
+    @NotBlank
+    @Size(min = 10, max = 50)
+    @Pattern(regexp = Validator.FINGERPRINT_PATTERN)
+    @Column(nullable = false, unique = true, length = 50)
+    protected String fingerprint;
+    @Schema(example = "fihefUHFUe7EFhuh8987HOfheuhEUg38Hefhus802efF")
     @Column(nullable = false, unique = true)
     private String refresh;
-
-    @ApiModelProperty(position = 1, example = "") // TODO: Add example and size
-    @Size(max = 32, min = 32)
-    @NotNull
-    @Column(nullable = false, unique = true, length = 32)
-    protected String fingerprint;
-
-    @ApiModelProperty(position = 2, example = "2020") // TODO: Add example and size
-    @NotNull
-    @Column(nullable = false, unique = true)
+    @Schema(example = "2022-12-31",
+            accessMode = Schema.AccessMode.WRITE_ONLY)
+    @Column(nullable = false)
     private Date expires;
 
     @JsonIgnore

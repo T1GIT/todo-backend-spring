@@ -2,60 +2,65 @@ package com.todo.app.data.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.todo.app.data.util.base.AuditModel;
+import com.todo.app.security.Validator;
 import com.todo.app.security.util.enums.Role;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-import java.util.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
-@ApiModel
+@Schema(description = "Representation of the users table")
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users")
-@JsonIgnoreProperties(value = "psw", allowSetters = true)
 public class User extends AuditModel<User> {
 
-    @ApiModelProperty(position = 0, example = "example@mail.ru")
-    @NotNull
+    @Schema(example = "example@mail.ru")
+    @NotBlank
     @Size(min = 7, max = 255)
-    @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,63})$")
+    @Pattern(regexp = Validator.EMAIL_PATTERN)
     @Column(unique = true, nullable = false, length = 256)
     protected String email;
 
-    @ApiModelProperty(position = 1, example = "password1")
-    @NotNull
+    @Schema(example = "password1",
+            accessMode = Schema.AccessMode.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotBlank
     @Size(min = 8, max = 1181)
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Zа-яА-Я]).*$")
+    @Pattern(regexp = Validator.PSW_PATTERN)
     @Column(nullable = false, length = 1181)
     protected String psw;
 
-    @ApiModelProperty(position = 2, example = "Ivan")
+    @Schema(example = "Ivan")
     @Size(max = 50)
     @Column(length = 50)
     protected String name;
 
-    @ApiModelProperty(position = 3, example = "Ivanov")
+    @Schema(example = "Ivanov")
     @Size(max = 50)
     @Column(length = 50)
     protected String surname;
 
-    @ApiModelProperty(position = 4, example = "Ivanovich")
+    @Schema(example = "Ivanovich")
     @Size(max = 50)
     @Column(length = 50)
     protected String patronymic;
 
-    @ApiModelProperty(position = 5, example = "2020-12-31")
+    @Schema(example = "2000-12-31")
     protected Date birthdate;
 
-    @ApiModelProperty(position = 6, example = "ADMIN")
+    @Schema(example = "ADMIN")
     @Enumerated(EnumType.STRING)
     protected Role role = Role.BASIC;
 

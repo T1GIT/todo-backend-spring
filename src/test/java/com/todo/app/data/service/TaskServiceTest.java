@@ -1,28 +1,22 @@
 package com.todo.app.data.service;
 
 import com.todo.app.TodoApplication;
-import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.Category;
 import com.todo.app.data.model.Task;
 import com.todo.app.data.model.User;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @SpringBootTest(classes = TodoApplication.class)
@@ -51,7 +45,10 @@ class TaskServiceTest {
 
     @AfterEach
     void afterEach() {
-        userService.delete(user.getId());
+        try {
+            userService.delete(user.getId());
+        } catch (ResourceNotFoundException ignored) {
+        }
     }
 
     @Test
@@ -105,7 +102,9 @@ class TaskServiceTest {
         Task task = taskService.add(user.getId(), category.getId(), new Task()
                 .edit(c -> c.setTitle(title)));
         taskService.delete(user.getId(), task.getId());
-        assertDoesNotThrow(() -> taskService.delete(user.getId(), task.getId()));
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> taskService.delete(user.getId(), task.getId()));
         System.out.println(task);
     }
 

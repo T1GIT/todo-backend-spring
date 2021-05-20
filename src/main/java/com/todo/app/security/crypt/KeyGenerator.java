@@ -21,13 +21,21 @@ public abstract class KeyGenerator {
         }
     }
 
+    public static String string(int keyLength) {
+        return encoder.encodeToString(bytes(keyLength)).substring(0, keyLength);
+    }
+
     public static String string(KeyLength keyLength) {
-        return encoder.encodeToString(bytes(keyLength)).substring(0, keyLength.getLength());
+        return string(keyLength.getLength());
+    }
+
+    public static byte[] bytes(int keyLength) {
+        byte[] bytes = new byte[keyLength];
+        secureRandom.nextBytes(bytes);
+        return bytes;
     }
 
     public static byte[] bytes(KeyLength keyLength) {
-        byte[] bytes = new byte[keyLength.getLength()];
-        secureRandom.nextBytes(bytes);
-        return bytes;
+        return bytes(keyLength.getLength());
     }
 }

@@ -1,7 +1,6 @@
 package com.todo.app.data.util.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -21,12 +20,14 @@ import java.util.Date;
 public abstract class AuditModel<T extends AuditModel<T>> extends AbstractModel<T> {
 
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     @CreatedDate
     @Setter(AccessLevel.NONE)
     @Column(name = "createdAt", nullable = false, updatable = false)
     protected Date createdAt = new Date();
 
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     @LastModifiedDate
     @Setter(AccessLevel.NONE)
     @Column(name = "updatedAt", nullable = false)
