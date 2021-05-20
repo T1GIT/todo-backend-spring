@@ -1,55 +1,105 @@
 package com.todo.app.api.controller;
 
+import com.todo.app.api.config.SwaggerConfig;
 import com.todo.app.data.model.Category;
-import com.todo.app.data.service.CategoryService;
-import com.todo.app.security.auth.AuthContext;
-import com.todo.app.security.auth.AuthUser;
-import io.swagger.annotations.Api;
-import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
-@Api(tags = "Category controller",
+@Tag(name = "Category controller",
         description = "Controller to provide operations with category models")
-@RequiredArgsConstructor
-@RestController
+@SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME)
 @RequestMapping("/todo")
-public class CategoryController {
+public interface CategoryController {
 
-    private final CategoryService categoryService;
-    private final AuthContext authContext;
-
+    @Operation(
+            description = "Responses categories list of the authorised user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User was login"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised access", content = @Content)
+    })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Category> getCategoriesByUser() {
-        return categoryService.getOf(authContext.getUser().getId());
-    }
+    List<Category> getCategoriesByUser();
 
+    @Operation(
+            description = "Creates new category with the authorised user. Responses with header" +
+                    " \"Location\": category/{categoryId}")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Category object",
+            content = @Content(
+                    examples = @ExampleObject(
+                            name = "Json category",
+                            description = "Gives only name of the category",
+                            value = """
+                                      {
+                                      "name": "Shopping list"
+                                    }"""
+                    )
+            )
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Category was created"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised access", content = @Content)
+    })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Category addCategory(
-            @RequestBody Category category) {
-        return categoryService.add(authContext.getUser().getId(), category);
-    }
+    ResponseEntity<Void> addCategory(
+            @RequestBody Category category);
 
+    @Operation(
+            description = "Change category's name")
+    @Parameter(
+            name = "categoryId",
+            description = "Id of the target category for changing name")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Category object with name",
+            content = @Content(
+                    examples = @ExampleObject(
+                            name = "Json category",
+                            description = "Gives only name of the category",
+                            value = """
+                                      {
+                                      "name": "Some another name"
+                                    }"""
+                    )
+            )
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Category was created"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised access"),
+            @ApiResponse(responseCode = "403", description = "Authorised user is not an owner of the category")
+    })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping(value = "/category/{categoryId}/name", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void changeName(
+    void changeName(
             @PathVariable long categoryId,
-            @RequestBody Category category) {
-        categoryService.changeName(authContext.getUser().getId(), categoryId, category.getName());
-    }
+            @RequestBody Category category);
 
+    @Operation(
+            description = "Deletes category and all its tasks")
+    @Parameter(
+            name = "categoryId",
+            description = "Id of the target category to delete")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Category was deleted"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised access"),
+            @ApiResponse(responseCode = "403", description = "Authorised user is not an owner of the category")
+    })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/category/{categoryId}")
-    public void deleteCategory(
-            @PathVariable long categoryId) {
-        categoryService.delete(authContext.getUser().getId(), categoryId);
-    }
+    void deleteCategory(
+            @PathVariable long categoryId);
 }

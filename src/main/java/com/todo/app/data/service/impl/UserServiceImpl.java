@@ -9,7 +9,7 @@ import com.todo.app.data.util.exception.EmailNotExistsException;
 import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.security.crypt.Hash;
 import com.todo.app.security.util.enums.Role;
-import com.todo.app.security.util.exception.IncorrectPswException;
+import com.todo.app.security.util.exception.InvalidPswException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,11 +37,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User login(User user) throws ResourceNotFoundException, IncorrectPswException {
+    public User login(User user) throws ResourceNotFoundException, InvalidPswException {
         return userRepository.saveAndFlush(
                 userRepository.findByEmail(user.getEmail()).map(foundUser -> {
                     if (!Hash.check(user.getPsw(), foundUser.getPsw()))
-                        throw new IncorrectPswException(user.getEmail());
+                        throw new InvalidPswException(user.getEmail());
                     return foundUser;
                 }).orElseThrow(() -> new EmailNotExistsException(user.getEmail())));
     }
@@ -84,6 +84,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(long userId) {
-        userRepository.findById(userId).ifPresent(userRepository::delete);
+        userRepository.findById(userId).ifPresentOrElse(
+                userRepository::delete,
+                () -> {
+                    throw new ResourceNotFoundException(User.class, userId);
+                });
     }
 }

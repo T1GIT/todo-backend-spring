@@ -1,14 +1,17 @@
 package com.todo.app.api.controller;
 
+import com.todo.app.api.config.SwaggerConfig;
 import com.todo.app.api.util.exception.IncorrectEmailException;
 import com.todo.app.api.util.exception.IncorrectPswException;
 import com.todo.app.data.model.User;
-import com.todo.app.data.service.UserService;
-import com.todo.app.security.Validator;
-import com.todo.app.security.auth.AuthContext;
-import com.todo.app.security.token.RefreshProvider;
-import io.swagger.annotations.*;
-import lombok.RequiredArgsConstructor;
+import com.todo.app.data.util.exception.EmailExistsException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -16,53 +19,110 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 
 
-@Api(tags = "User controller",
-        description = "Provides operations with user models")
-@RequiredArgsConstructor
-@RestController
+@Tag(name = "User controller",
+        description = "Controller to provide operations with user models")
+@SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME)
 @RequestMapping("/user")
-public class UserController {
+public interface UserController {
 
-    private final UserService userService;
-    private final AuthContext authContext;
-
-    @ApiOperation("Validates and changes user email address")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PatchMapping(value = "/email", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void changeEmail(
-            @ApiParam(value = "DESC")
-            @RequestBody User user) {
-        if (!Validator.email(user.getEmail()))
-            throw new IncorrectEmailException(user.getEmail());
-        userService.changeEmail(authContext.getUser().getId(), user.getEmail());
-    }
-
-    @ApiOperation("Validates and changes user's password")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PatchMapping(value = "/psw", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void changePsw(
-            @RequestBody User user) {
-        if (!Validator.psw(user.getPsw()))
-            throw new IncorrectPswException(user.getPsw());
-        userService.changePsw(authContext.getUser().getId(), user.getPsw());
-    }
-
-    @ApiOperation("Updates information about the user")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping()
-    public void updateUser(
-            @RequestBody User user) {
-        userService.update(authContext.getUser().getId(), user);
-    }
-
-    @ApiOperation("Deletes the user")
+    @Operation(
+            description = "Changes user's email address")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "New user's email",
+            content = @Content(
+                    examples = @ExampleObject(
+                            name = "Email",
+                            description = "JSON object with email",
+                            value = """
+                                    {
+                                        "email": "example@mail.ru"
+                                    }"""
+                    )
+            )
+    )
     @ApiResponses({
-            @ApiResponse(code = 204, message = "Entity was deleted or not existed")
+            @ApiResponse(responseCode = "204", description = "Email was changed"),
+            @ApiResponse(responseCode = "409", description = "Email already exists"),
+            @ApiResponse(responseCode = "422", description = "Email is incorrect"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised access")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping()
-    public void deleteUser(HttpServletResponse response) {
-        userService.delete(authContext.getUser().getId());
-        RefreshProvider.erase(response);
-    }
+    @PatchMapping(
+            value = "/email",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    void changeEmail(@RequestBody User user)
+            throws EmailExistsException, IncorrectEmailException;
+
+    @Operation(
+            description = "Changes user's password")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "New user's password",
+            content = @Content(
+                    examples = @ExampleObject(
+                            name = "Password",
+                            description = "JSON object with password",
+                            value = """
+                                    {
+                                        "psw": "password1"
+                                    }"""
+                    )
+            )
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Password was changed"),
+            @ApiResponse(responseCode = "422", description = "Password is incorrect"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised access")
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PatchMapping(
+            value = "/psw",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    void changePsw(@RequestBody User user)
+            throws IncorrectPswException;
+
+    @Operation(
+            description = "Updates additional info about the user")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "JSON object with info that must be changed",
+            content = @Content(
+                    examples = {
+                            @ExampleObject(
+                                    name = "Name and surname",
+                                    description = "Specifies only name and surname, but may be patronymic also",
+                                    value = """
+                                            {
+                                                "name": "Ivan",
+                                                "surname": "Ivanovich"
+                                            }"""
+                            ),
+                            @ExampleObject(
+                                    name = "Birthdate",
+                                    description = "In this mapping birthdate can be changed either",
+                                    value = """
+                                            {
+                                                "birthdate": "2000-01-01"
+                                            }"""
+                            )
+                    }
+            )
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Info was changed"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised access")
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    void updateUser(@RequestBody User user);
+
+    @Operation(
+            description = "Deletes user from the database and clears session cookies")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "User was deleted"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised access")
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping
+    void deleteUser(HttpServletResponse response);
 }

@@ -1,19 +1,18 @@
 package com.todo.app.data.model;
 
 
-import com.todo.app.data.util.base.AuditModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import com.todo.app.data.util.base.AuditModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Size;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 
-@ApiModel
+@Schema(description = "Representation of the categories table")
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
@@ -21,14 +20,10 @@ import java.util.*;
 @Table(name = "categories")
 public class Category extends AuditModel<Category> {
 
-    @ApiModelProperty(position = 0, example = "Shopping list")
+    @Schema(example = "Shopping list")
     @Size(max = 100)
     @Column(nullable = false, length = 100)
     private String name;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    private User user;
 
     @JsonIgnore
     @Setter(AccessLevel.NONE)
@@ -36,6 +31,10 @@ public class Category extends AuditModel<Category> {
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Task> tasks = new HashSet<>();
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    private User user;
 
     public void addTask(Task task) {
         this.tasks.add(task);

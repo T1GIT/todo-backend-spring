@@ -9,6 +9,7 @@ import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.security.crypt.KeyGenerator;
 import com.todo.app.security.token.RefreshProvider;
 import com.todo.app.security.util.enums.KeyLength;
+import com.todo.app.security.util.exception.ExpiredRefreshException;
 import com.todo.app.security.util.exception.InvalidFingerprintException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,24 +41,27 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public Session update(String refresh, String fingerprint) throws ResourceNotFoundException, InvalidFingerprintException {
+    public Session update(String refresh, String fingerprint) {
         return sessionRepository.findByRefresh(refresh).map(session -> {
-            if (session.getFingerprint().equals(fingerprint)) {
-                return sessionRepository.saveAndFlush(
-                        session.edit(s -> {
-                            s.setRefresh(genValue());
-                            s.setExpires(new Date(System.currentTimeMillis() + RefreshProvider.DURATION.toMillis()));
-                        }));
-            } else {
-                sessionRepository.delete(session);
+            if (session.getExpires().compareTo(new Date()) < 0)
+                throw new ExpiredRefreshException(session.getId(), session.getRefresh());
+            if (!session.getFingerprint().equals(fingerprint))
                 throw new InvalidFingerprintException(session, fingerprint);
-            }
+            return sessionRepository.saveAndFlush(
+                    session.edit(s -> {
+                        s.setRefresh(genValue());
+                        s.setExpires(new Date(System.currentTimeMillis() + RefreshProvider.DURATION.toMillis()));
+                    }));
         }).orElseThrow(() -> new ResourceNotFoundException(Session.class, "value", refresh));
     }
 
     @Override
-    public void delete(String refresh) throws ResourceNotFoundException {
-        sessionRepository.findByRefresh(refresh).ifPresent(sessionRepository::delete);
+    public void delete(String refresh) {
+        sessionRepository.findByRefresh(refresh).ifPresentOrElse(
+                sessionRepository::delete,
+                () -> {
+                    throw new ResourceNotFoundException(Session.class, "refresh", refresh);
+                });
     }
 
     private String genValue() {
