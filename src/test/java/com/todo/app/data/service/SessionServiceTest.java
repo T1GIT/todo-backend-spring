@@ -3,6 +3,7 @@ package com.todo.app.data.service;
 import com.todo.app.TodoApplication;
 import com.todo.app.data.model.Session;
 import com.todo.app.data.model.User;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.security.util.enums.KeyLength;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,10 @@ class SessionServiceTest {
 
     @AfterEach
     void afterEach() {
-        userService.delete(user.getId());
+        try {
+            userService.delete(user.getId());
+        } catch (ResourceNotFoundException ignored) {
+        }
     }
 
     @Test
@@ -59,7 +63,9 @@ class SessionServiceTest {
     void delete() {
         Session session = sessionService.create(user.getId(), fingerprint);
         sessionService.delete(session.getRefresh());
-        assertDoesNotThrow(() -> sessionService.delete(session.getRefresh()));
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> sessionService.delete(session.getRefresh()));
         System.out.println(session);
     }
 }

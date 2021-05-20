@@ -1,24 +1,14 @@
 package com.todo.app.data.service;
 
 import com.todo.app.TodoApplication;
-import com.todo.app.data.model.Task;
-import com.todo.app.data.repo.UserRepository;
-import com.todo.app.data.util.exception.ResourceNotFoundException;
 import com.todo.app.data.model.User;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import javax.transaction.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,7 +36,10 @@ class UserServiceTest {
 
     @AfterEach
     void afterEach() {
-        userService.delete(user.getId());
+        try {
+            userService.delete(user.getId());
+        } catch (ResourceNotFoundException ignored) {
+        }
     }
 
     @Test
@@ -115,8 +108,9 @@ class UserServiceTest {
     @Test
     void delete() {
         userService.delete(user.getId());
-        assertDoesNotThrow(() ->
-                userService.delete(user.getId()));
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> userService.delete(user.getId()));
         System.out.println(user);
     }
 }

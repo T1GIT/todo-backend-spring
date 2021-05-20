@@ -176,7 +176,7 @@ class TaskControllerTest {
         mvc.perform(MockMvcRequestBuilders
                 .delete("/todo/task/" + taskId)
                 .header("authorization", "Bearer " + jwt))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNotFound());
     }
 
     long createTaskByRequest() throws Exception {

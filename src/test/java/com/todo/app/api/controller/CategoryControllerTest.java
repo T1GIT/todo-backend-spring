@@ -144,7 +144,7 @@ class CategoryControllerTest {
         mvc.perform(MockMvcRequestBuilders
                 .delete("/todo/category/" + category.getId())
                 .header("authorization", "Bearer " + jwt))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNotFound());
     }
 
     String createCategoryJson(String name) {

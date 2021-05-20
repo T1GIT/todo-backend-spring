@@ -3,6 +3,7 @@ package com.todo.app.data.service;
 import com.todo.app.TodoApplication;
 import com.todo.app.data.model.Category;
 import com.todo.app.data.model.User;
+import com.todo.app.data.util.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +14,8 @@ import org.springframework.test.context.TestPropertySource;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = TodoApplication.class)
 @TestPropertySource("classpath:application_test.properties")
@@ -37,7 +38,10 @@ class CategoryServiceTest {
 
     @AfterEach
     void afterEach() {
-        userService.delete(user.getId());
+        try {
+            userService.delete(user.getId());
+        } catch (ResourceNotFoundException ignored) {
+        }
     }
 
     @Test
@@ -80,9 +84,11 @@ class CategoryServiceTest {
     @Test
     void delete() {
         Category category = categoryService.add(user.getId(), new Category()
-            .edit(c -> c.setName(name)));
+                .edit(c -> c.setName(name)));
         categoryService.delete(user.getId(), category.getId());
-        assertDoesNotThrow(() -> categoryService.delete(user.getId(), category.getId()));
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> categoryService.delete(user.getId(), category.getId()));
         System.out.println(category);
     }
 
