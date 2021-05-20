@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -52,7 +53,10 @@ public interface AdminController {
             @ApiResponse(responseCode = "404", description = "Given user was not found")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PatchMapping("/user/{userId}/role")
+    @PatchMapping(
+            value = "/user/{userId}/role",
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     void changeRole(
             @PathVariable long userId,
             @RequestBody User user)

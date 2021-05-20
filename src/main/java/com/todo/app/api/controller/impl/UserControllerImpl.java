@@ -1,6 +1,7 @@
 package com.todo.app.api.controller.impl;
 
 import com.todo.app.api.controller.UserController;
+import com.todo.app.api.util.exception.IncorrectEmailException;
 import com.todo.app.api.util.exception.IncorrectPswException;
 import com.todo.app.data.model.User;
 import com.todo.app.data.service.UserService;
@@ -23,8 +24,8 @@ public class UserControllerImpl implements UserController {
     @Override
     public void changeEmail(User user) {
         if (!Validator.email(user.getEmail()))
-
-            userService.changeEmail(authContext.getUser().getId(), user.getEmail());
+            throw new IncorrectEmailException(user.getEmail());
+        userService.changeEmail(authContext.getUser().getId(), user.getEmail());
     }
 
     @Override

@@ -42,12 +42,14 @@ public interface UserController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Email was changed"),
-            @ApiResponse(responseCode = "409", description = "Email already exists", content = @Content),
-            @ApiResponse(responseCode = "422", description = "Email is incorrect", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorised access", content = @Content)
+            @ApiResponse(responseCode = "409", description = "Email already exists"),
+            @ApiResponse(responseCode = "422", description = "Email is incorrect"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised access")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PatchMapping(value = "/email", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(
+            value = "/email",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     void changeEmail(@RequestBody User user)
             throws EmailExistsException, IncorrectEmailException;
 
@@ -68,11 +70,13 @@ public interface UserController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Password was changed"),
-            @ApiResponse(responseCode = "422", description = "Password is incorrect", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorised access", content = @Content)
+            @ApiResponse(responseCode = "422", description = "Password is incorrect"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised access")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PatchMapping(value = "/psw", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(
+            value = "/psw",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     void changePsw(@RequestBody User user)
             throws IncorrectPswException;
 
@@ -104,17 +108,19 @@ public interface UserController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Info was changed"),
-            @ApiResponse(responseCode = "401", description = "Unauthorised access", content = @Content)
+            @ApiResponse(responseCode = "401", description = "Unauthorised access")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping
+    @PutMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     void updateUser(@RequestBody User user);
 
     @Operation(
             description = "Deletes user from the database and clears session cookies")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "User was deleted"),
-            @ApiResponse(responseCode = "401", description = "Unauthorised access", content = @Content)
+            @ApiResponse(responseCode = "401", description = "Unauthorised access")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping
