@@ -52,7 +52,7 @@ public interface CategoryController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Category was created"),
-            @ApiResponse(responseCode = "401", description = "Password/fingerprint is invalid for this account", content = @Content)
+            @ApiResponse(responseCode = "401", description = "Unauthorised access", content = @Content)
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -79,7 +79,7 @@ public interface CategoryController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Category was created"),
-            @ApiResponse(responseCode = "401", description = "Password/fingerprint is invalid for this account")
+            @ApiResponse(responseCode = "401", description = "Unauthorised access")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping(value = "/category/{categoryId}/name", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -88,7 +88,7 @@ public interface CategoryController {
             @RequestBody Category category);
 
     @Operation(
-            description = "Deletes categories and all its tasks")
+            description = "Deletes category and all its tasks")
     @Parameter(
             name = "categoryId",
             description = "Id of the target category to delete")
