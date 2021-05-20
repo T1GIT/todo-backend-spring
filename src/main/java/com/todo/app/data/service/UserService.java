@@ -20,5 +20,5 @@ public interface UserService {
 
     void update(long userId, User newUser) throws ResourceNotFoundException;
 
-    void delete(long userId);
+    void delete(long userId) throws ResourceNotFoundException;
 }

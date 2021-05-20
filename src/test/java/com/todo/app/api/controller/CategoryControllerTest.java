@@ -104,7 +104,8 @@ class CategoryControllerTest {
         String location = result.getResponse().getHeader("location");
         long categoryId = Long.parseLong(location.substring(location.lastIndexOf("/") + 1));
         long userId = userRepository.findByEmail(email).get().getId();
-        Category category = categoryRepository.findByUserIdAndId(userId, categoryId).orElse(null);
+        Category category = categoryRepository.getOne(categoryId);
+        assertEquals(userId, category.getUser().getId());
         assertNotNull(category);
         assertEquals(name, category.getName());
     }

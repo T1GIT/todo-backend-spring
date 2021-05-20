@@ -12,5 +12,5 @@ public interface SessionService {
     Session update(String refresh, String fingerprint)
             throws ResourceNotFoundException, InvalidFingerprintException, ExpiredRefreshException;
 
-    void delete(String refresh);
+    void delete(String refresh) throws ResourceNotFoundException;
 }

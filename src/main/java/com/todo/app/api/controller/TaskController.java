@@ -32,8 +32,9 @@ public interface TaskController {
             description = "Id of the target category to get tasks")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tasks respond"),
-            @ApiResponse(responseCode = "404", description = "Category not found", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorised access", content = @Content)
+            @ApiResponse(responseCode = "401", description = "Unauthorised access", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Authorised user is not an owner of the task", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Category not found", content = @Content)
     })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(
@@ -75,6 +76,7 @@ public interface TaskController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Task was created"),
             @ApiResponse(responseCode = "401", description = "Unauthorised access"),
+            @ApiResponse(responseCode = "403", description = "Authorised user is not an owner of the task"),
             @ApiResponse(responseCode = "404", description = "Category not found")
     })
     @ResponseStatus(HttpStatus.CREATED)
@@ -118,6 +120,7 @@ public interface TaskController {
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Task was updated"),
             @ApiResponse(responseCode = "401", description = "Unauthorised access"),
+            @ApiResponse(responseCode = "403", description = "Authorised user is not an owner of the task"),
             @ApiResponse(responseCode = "404", description = "Task not found")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -160,6 +163,7 @@ public interface TaskController {
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Task was updated"),
             @ApiResponse(responseCode = "401", description = "Unauthorised access"),
+            @ApiResponse(responseCode = "403", description = "Authorised user is not an owner of the task"),
             @ApiResponse(responseCode = "404", description = "Task not found")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -179,6 +183,7 @@ public interface TaskController {
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Task was deleted"),
             @ApiResponse(responseCode = "401", description = "Unauthorised access"),
+            @ApiResponse(responseCode = "403", description = "Authorised user is not an owner of the task"),
             @ApiResponse(responseCode = "404", description = "Task not found")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)

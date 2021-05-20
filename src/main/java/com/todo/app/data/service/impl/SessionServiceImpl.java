@@ -57,7 +57,11 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public void delete(String refresh) {
-        sessionRepository.findByRefresh(refresh).ifPresent(sessionRepository::delete);
+        sessionRepository.findByRefresh(refresh).ifPresentOrElse(
+                sessionRepository::delete,
+                () -> {
+                    throw new ResourceNotFoundException(Session.class, "refresh", refresh);
+                });
     }
 
     private String genValue() {

@@ -79,7 +79,8 @@ public interface CategoryController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Category was created"),
-            @ApiResponse(responseCode = "401", description = "Unauthorised access")
+            @ApiResponse(responseCode = "401", description = "Unauthorised access"),
+            @ApiResponse(responseCode = "403", description = "Authorised user is not an owner of the category")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping(value = "/category/{categoryId}/name", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -94,7 +95,8 @@ public interface CategoryController {
             description = "Id of the target category to delete")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Category was deleted"),
-            @ApiResponse(responseCode = "401", description = "Unauthorised access")
+            @ApiResponse(responseCode = "401", description = "Unauthorised access"),
+            @ApiResponse(responseCode = "403", description = "Authorised user is not an owner of the category")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/category/{categoryId}")
