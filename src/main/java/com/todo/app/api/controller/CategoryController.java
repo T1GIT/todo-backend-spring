@@ -3,6 +3,7 @@ package com.todo.app.api.controller;
 import com.todo.app.api.config.SwaggerConfig;
 import com.todo.app.data.model.Category;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URISyntaxException;
 import java.util.List;
 
 
@@ -57,10 +57,13 @@ public interface CategoryController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> addCategory(
-            @RequestBody Category category) throws URISyntaxException;
+            @RequestBody Category category);
 
     @Operation(
             description = "Change category's name")
+    @Parameter(
+            name = "categoryId",
+            description = "Id of the target category for changing name")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Category object with name",
             content = @Content(
@@ -86,6 +89,9 @@ public interface CategoryController {
 
     @Operation(
             description = "Deletes categories and all its tasks")
+    @Parameter(
+            name = "categoryId",
+            description = "Id of the target category to delete")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Category was deleted"),
             @ApiResponse(responseCode = "401", description = "Unauthorised access")
