@@ -25,11 +25,11 @@ public abstract class JwtProvider {
     public static String getJwt(User user) {
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
+                .setClaims(AuthUser.toMap(user))
                 .setExpiration(new Date(System.currentTimeMillis() + DURATION.toMillis()))
                 .setIssuedAt(new Date())
                 .setIssuer(TodoApplication.ADDRESS)
                 .setAudience(user.getRole().name())
-                .setClaims(AuthUser.toMap(user))
                 .signWith(KEY)
                 .compact();
     }

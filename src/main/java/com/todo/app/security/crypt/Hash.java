@@ -23,7 +23,7 @@ public abstract class Hash {
     /**
      * Amount of hash algorithm repeating
      */
-    private static final int ITERATIONS = 300000;
+    private static final int ITERATIONS = 100000;
 
     /**
      * Amount of symbols in the key for the algorithm.

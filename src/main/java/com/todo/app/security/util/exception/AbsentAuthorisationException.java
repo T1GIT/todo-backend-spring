@@ -1,5 +1,6 @@
 package com.todo.app.security.util.exception;
 
+import com.todo.app.security.util.base.SecurityException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 

@@ -1,5 +1,6 @@
 package com.todo.app.api.config;
 
+import com.todo.app.TodoApplication;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -22,6 +23,8 @@ public class SwaggerConfig {
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
+    @Value("${server.port}")
+    private String port;
 
     @Bean
     public OpenAPI openAPI() {
@@ -86,7 +89,7 @@ public class SwaggerConfig {
     private List<Server> apiServers() {
         return List.of(
                 new Server()
-                        .url("http://localhost:8080" + contextPath)
+                        .url("%s:%s%s".formatted(TodoApplication.ADDRESS, port, contextPath))
                         .description("Dev server"));
     }
 }
