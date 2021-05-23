@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
 public class ExpiredRefreshException extends SecurityException {
     public ExpiredRefreshException(long sessionId, String refresh) {
-        super(String.format("Refresh token %s from session with id %d is expired",
-                refresh, sessionId));
+        super("Refresh token %s from session with id %d is expired"
+                .formatted(refresh, sessionId));
     }
 }

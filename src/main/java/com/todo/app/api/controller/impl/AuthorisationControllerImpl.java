@@ -28,28 +28,28 @@ public class AuthorisationControllerImpl implements AuthorisationController {
     private final SessionService sessionService;
 
     @Override
-    public JwtJson register(AuthForm authForm, HttpServletResponse response) {
-        validateAuthForm(authForm);
-        User user = userService.register(authForm.getUser());
-        return createSession(user, authForm.getFingerprint(), response);
+    public JwtJson register(AuthForm form, HttpServletResponse response) {
+        validateAuthForm(form);
+        User user = userService.register(form.getUser());
+        return createSession(user, form.getFingerprint(), response);
     }
 
     @Override
-    public JwtJson login(AuthForm authForm, HttpServletResponse response) {
-        validateAuthForm(authForm);
-        User user = userService.login(authForm.getUser());
-        return createSession(user, authForm.getFingerprint(), response);
+    public JwtJson login(AuthForm form, HttpServletResponse response) {
+        validateAuthForm(form);
+        User user = userService.login(form.getUser());
+        return createSession(user, form.getFingerprint(), response);
     }
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        sessionService.delete(RefreshProvider.extract(request));
         RefreshProvider.erase(response);
+        sessionService.delete(RefreshProvider.extract(request));
     }
 
     @Override
-    public JwtJson refresh(Session session, HttpServletRequest request, HttpServletResponse response) {
-        return updateSession(session.getFingerprint(), request, response);
+    public JwtJson refresh(AuthForm form, HttpServletRequest request, HttpServletResponse response) {
+        return updateSession(form.getFingerprint(), request, response);
     }
 
     private void validateAuthForm(AuthForm form) {

@@ -1,8 +1,6 @@
 package com.todo.app.security.token;
 
 import com.todo.app.api.util.CookieUtil;
-import com.todo.app.security.crypt.KeyGenerator;
-import com.todo.app.security.util.enums.KeyLength;
 import com.todo.app.security.util.exception.MissedRefreshException;
 
 import javax.servlet.http.Cookie;
@@ -15,7 +13,7 @@ import java.util.Optional;
 public abstract class RefreshProvider {
 
     public final static Duration DURATION = Duration.ofDays(90);
-    public final static String COOKIE_NAME = KeyGenerator.string(KeyLength.REFRESH_NAME);
+    public final static String COOKIE_NAME = "REFRESH";
 
     public static void attach(HttpServletResponse response, String refresh) {
         response.addCookie(

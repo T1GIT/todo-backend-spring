@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 public class InvalidFingerprintException extends SecurityException {
     public InvalidFingerprintException(Session session, String fingerprint) {
-        super(String.format("Fingerprint %s not equal to fingerprint %s attached to session with refresh %s",
-                fingerprint, session.getFingerprint(), session.getRefresh()));
+        super("Fingerprint %s not equal to fingerprint %s attached to session with refresh %s"
+                .formatted(fingerprint, session.getFingerprint(), session.getRefresh()));
     }
 }

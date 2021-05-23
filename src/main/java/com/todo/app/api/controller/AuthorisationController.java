@@ -3,7 +3,6 @@ package com.todo.app.api.controller;
 import com.todo.app.api.util.base.IncorrectFormException;
 import com.todo.app.api.util.json.request.AuthForm;
 import com.todo.app.api.util.json.response.JwtJson;
-import com.todo.app.data.model.Session;
 import com.todo.app.data.util.exception.EmailExistsException;
 import com.todo.app.data.util.exception.EmailNotExistsException;
 import com.todo.app.data.util.exception.ResourceNotFoundException;
@@ -81,7 +80,7 @@ public interface AuthorisationController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     JwtJson register(
-            @RequestBody AuthForm authForm,
+            @RequestBody AuthForm form,
             HttpServletResponse response)
             throws EmailExistsException, IncorrectFormException;
 
@@ -117,7 +116,7 @@ public interface AuthorisationController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     JwtJson login(
-            @RequestBody AuthForm authForm,
+            @RequestBody AuthForm form,
             HttpServletResponse response)
             throws EmailNotExistsException, InvalidPswException, InvalidFingerprintException;
 
@@ -129,8 +128,7 @@ public interface AuthorisationController {
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(
-            value = "/logout",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+            value = "/logout")
     void logout(HttpServletRequest request, HttpServletResponse response);
 
     @Operation(
@@ -160,7 +158,7 @@ public interface AuthorisationController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     JwtJson refresh(
-            @RequestBody Session session,
+            @RequestBody AuthForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws ResourceNotFoundException, InvalidFingerprintException, ExpiredRefreshException;
 }
