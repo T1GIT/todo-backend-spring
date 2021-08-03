@@ -12,5 +12,7 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    Optional<Task> findByCategoryIdAndId(long categoryId, long taskId);
+    List<Task> getAllByCategoryId(long categoryId);
+
+    boolean existsByCategoryIdAndId(long categoryId, long taskId);
 }

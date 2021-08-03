@@ -26,23 +26,14 @@ public class Category extends AuditModel<Category> {
     private String name;
 
     @JsonIgnore
-    @Setter(AccessLevel.NONE)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final Set<Task> tasks = new HashSet<>();
-
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private User user;
 
-    public void addTask(Task task) {
-        this.tasks.add(task);
-        task.setCategory(this);
-    }
-
-    public void removeTask(Task task) {
-        this.tasks.remove(task);
-        task.setCategory(null);
-    }
+    @JsonIgnore
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    private final Set<Task> tasks = new HashSet<>();
 }

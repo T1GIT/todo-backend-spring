@@ -64,7 +64,7 @@ public class SwaggerConfig {
         return new Info()
                 .title("TODO REST API")
                 .description("Restful api for creating tasks")
-                .version("v0.1")
+                .version(contextPath.substring(contextPath.lastIndexOf("/") + 1))
                 .license(new License()
                         .name("GPL-3.0")
                         .url("https://github.com/T1GIT/todo-backend-spring/blob/master/LICENSE.md"))

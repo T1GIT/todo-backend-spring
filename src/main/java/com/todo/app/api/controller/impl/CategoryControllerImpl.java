@@ -27,7 +27,7 @@ public class CategoryControllerImpl implements com.todo.app.api.controller.Categ
     public ResponseEntity<Void> addCategory(Category category) {
         categoryService.add(authContext.getUser().getId(), category);
         return ResponseEntity
-                .created(URI.create("category/" + category.getId()))
+                .created(URI.create("categories/" + category.getId()))
                 .build();
     }
 

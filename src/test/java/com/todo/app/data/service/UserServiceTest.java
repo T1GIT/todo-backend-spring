@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import javax.transaction.Transactional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest(classes = TodoApplication.class)
 @TestPropertySource("classpath:application_test.properties")
+@Transactional
 class UserServiceTest {
 
     static User user;
@@ -108,9 +111,6 @@ class UserServiceTest {
     @Test
     void delete() {
         userService.delete(user.getId());
-        assertThrows(
-                ResourceNotFoundException.class,
-                () -> userService.delete(user.getId()));
-        System.out.println(user);
+        assertDoesNotThrow(() -> userService.delete(user.getId()));
     }
 }

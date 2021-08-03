@@ -22,7 +22,7 @@ import java.util.List;
 @Tag(name = "Task controller",
         description = "Controller to provide operations with task models")
 @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME)
-@RequestMapping("/todo")
+@RequestMapping("/todo/categories/{categoryId}/tasks")
 public interface TaskController {
 
     @Operation(
@@ -37,9 +37,7 @@ public interface TaskController {
             @ApiResponse(responseCode = "404", description = "Category not found", content = @Content)
     })
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(
-            value = "/category/{categoryId}/tasks",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     List<Task> getTasksByCategory(@PathVariable long categoryId)
             throws ResourceNotFoundException;
 
@@ -80,9 +78,7 @@ public interface TaskController {
             @ApiResponse(responseCode = "404", description = "Category not found")
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(
-            value = "/category/{categoryId}/task",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> addTask(
             @PathVariable long categoryId,
             @RequestBody Task task)
@@ -125,9 +121,10 @@ public interface TaskController {
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping(
-            value = "/task/{taskId}",
+            value = "/{taskId}",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     void updateTask(
+            @PathVariable long categoryId,
             @PathVariable long taskId,
             @RequestBody Task task)
             throws ResourceNotFoundException;
@@ -168,9 +165,10 @@ public interface TaskController {
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping(
-            value = "/task/{taskId}/completed",
+            value = "/{taskId}/completed",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     void changeCompleted(
+            @PathVariable long categoryId,
             @PathVariable long taskId,
             @RequestBody Task task)
             throws ResourceNotFoundException;
@@ -188,8 +186,9 @@ public interface TaskController {
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(
-            value = "/task/{taskId}")
+            value = "/{taskId}")
     void deleteTask(
+            @PathVariable long categoryId,
             @PathVariable long taskId)
             throws ResourceNotFoundException;
 }

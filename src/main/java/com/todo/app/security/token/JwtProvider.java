@@ -34,6 +34,7 @@ public abstract class JwtProvider {
                 .compact();
     }
 
+    // TODO: Add checking 
     public static AuthUser parseUser(String jwt) throws JwtException {
         return AuthUser.fromMap(
                 Jwts.parserBuilder()
