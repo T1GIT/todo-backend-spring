@@ -27,22 +27,22 @@ public class TaskControllerImpl implements com.todo.app.api.controller.TaskContr
     public ResponseEntity<Void> addTask(long categoryId, Task task) {
         taskService.add(authContext.getUser().getId(), categoryId, task);
         return ResponseEntity
-                .created(URI.create("task/" + task.getId()))
+                .created(URI.create("categories/" + categoryId + "/tasks/" + task.getId()))
                 .build();
     }
 
     @Override
-    public void updateTask(long taskId, Task task) {
-        taskService.update(authContext.getUser().getId(), taskId, task);
+    public void updateTask(long categoryId, long taskId, Task task) {
+        taskService.update(authContext.getUser().getId(), categoryId, taskId, task);
     }
 
     @Override
-    public void changeCompleted(long taskId, Task task) {
-        taskService.setCompleted(authContext.getUser().getId(), taskId, task.isCompleted());
+    public void changeCompleted(long categoryId, long taskId, Task task) {
+        taskService.setCompleted(authContext.getUser().getId(), categoryId, taskId, task.isCompleted());
     }
 
     @Override
-    public void deleteTask(long taskId) {
-        taskService.delete(authContext.getUser().getId(), taskId);
+    public void deleteTask(long categoryId, long taskId) {
+        taskService.delete(authContext.getUser().getId(), categoryId, taskId);
     }
 }

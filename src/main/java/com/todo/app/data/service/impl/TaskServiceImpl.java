@@ -2,8 +2,10 @@ package com.todo.app.data.service.impl;
 
 import com.todo.app.data.model.Category;
 import com.todo.app.data.model.Task;
+import com.todo.app.data.model.User;
 import com.todo.app.data.repo.CategoryRepository;
 import com.todo.app.data.repo.TaskRepository;
+import com.todo.app.data.repo.UserRepository;
 import com.todo.app.data.service.TaskService;
 import com.todo.app.data.util.base.AbstractModel;
 import com.todo.app.data.util.exception.NotOwnerException;
@@ -24,73 +26,66 @@ import java.util.stream.Collectors;
 @Transactional
 public class TaskServiceImpl implements TaskService {
 
+    private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final TaskRepository taskRepository;
 
     @Override
     public List<Task> getOf(long userId, long categoryId) {
-        return categoryRepository.findById(categoryId).map(category -> {
-            if (category.getUser().getId() != userId)
-                throw new NotOwnerException(userId, Category.class, categoryId);
-            return category.getTasks().stream()
-                    .map(c -> Hibernate.unproxy(c, Task.class))
-                    .sorted(Comparator.comparingLong(AbstractModel::getId))
-                    .collect(Collectors.toList());
-        }).orElseThrow(() -> new ResourceNotFoundException(Category.class, categoryId));
+        checkUserAndCategoryById(userId, categoryId);
+        return taskRepository.getAllByCategoryId(categoryId);
     }
 
     @Override
     public Task add(long userId, long categoryId, Task task) {
-        return taskRepository.saveAndFlush(
-                categoryRepository.findById(categoryId).map(category -> {
-                    if (category.getUser().getId() != userId)
-                        throw new NotOwnerException(userId, Category.class, categoryId);
-                    return task.edit(t -> t.setCategory(category));
-                }).orElseThrow(() -> new ResourceNotFoundException(Category.class, categoryId)));
+        checkUserAndCategoryById(userId, categoryId);
+        Category category = categoryRepository.getOne(categoryId);
+        task.setCategory(category);
+        taskRepository.saveAndFlush(task);
+        return task;
     }
 
     @Override
-    public void update(long userId, long taskId, Task newTask) {
-        taskRepository.saveAndFlush(
-                taskRepository.findById(taskId).map(task -> {
-                    if (task.getCategory().getUser().getId() != userId)
-                        throw new NotOwnerException(userId, Task.class, taskId);
-                    return task.edit(t -> {
-                        t.setTitle(newTask.getTitle());
-                        t.setDescription(newTask.getDescription());
-                    });
-                }).orElseThrow(() -> new ResourceNotFoundException(Task.class, taskId))
-        );
+    public void update(long userId, long categoryId, long taskId, Task task) {
+        checkUserAndCategoryAndTaskById(userId, categoryId, taskId);
+        Task foundTask = taskRepository.getOne(taskId);
+        if (task.getTitle() != null)
+            foundTask.setTitle(task.getTitle());
+        if (task.getDescription() != null)
+            foundTask.setDescription(task.getDescription());
+        taskRepository.saveAndFlush(foundTask);
     }
 
     @Override
-    public void setCompleted(long userId, long taskId, boolean isCompleted) throws ResourceNotFoundException {
-        taskRepository.saveAndFlush(
-                taskRepository.findById(taskId).map(task -> {
-                    if (task.getCategory().getUser().getId() != userId)
-                        throw new NotOwnerException(userId, Task.class, taskId);
-                    return task.edit(t -> {
-                        if (isCompleted) {
-                            t.setCompleted(true);
-                            t.setExecuteDate(new Date());
-                        } else {
-                            t.setCompleted(false);
-                            t.setExecuteDate(null);
-                        }
-                    });
-                }).orElseThrow(() -> new ResourceNotFoundException(Task.class, taskId))
-        );
+    public void setCompleted(long userId, long categoryId, long taskId, boolean isCompleted) throws ResourceNotFoundException {
+        checkUserAndCategoryAndTaskById(userId, categoryId, taskId);
+        Task task = taskRepository.getOne(taskId);
+        if (isCompleted) {
+            task.setCompleted(true);
+            task.setExecuteDate(new Date());
+        } else {
+            task.setCompleted(false);
+            task.setExecuteDate(null);
+        }
+        taskRepository.saveAndFlush(task);
     }
 
     @Override
-    public void delete(long userId, long taskId) {
-        taskRepository.findById(taskId)
-                .ifPresentOrElse(task -> {
-                    if (task.getCategory().getUser().getId() != userId)
-                        throw new NotOwnerException(userId, Task.class, taskId);
-                    taskRepository.delete(task);
-                }, () -> {
-                    throw new ResourceNotFoundException(Task.class, taskId);
-                });
+    public void delete(long userId, long categoryId, long taskId) {
+        checkUserAndCategoryAndTaskById(userId, categoryId, taskId);
+        taskRepository.deleteById(taskId);
+    }
+
+    private void checkUserAndCategoryById(long userId, long categoryId) throws ResourceNotFoundException {
+        if (!userRepository.existsById(userId))
+            throw new ResourceNotFoundException(User.class, userId);
+        if (!categoryRepository.existsByUserIdAndId(userId, categoryId))
+            throw new ResourceNotFoundException(User.class, userId, Category.class, categoryId);
+    }
+
+    private void checkUserAndCategoryAndTaskById(long userId, long categoryId, long taskId) throws ResourceNotFoundException {
+        checkUserAndCategoryById(userId, categoryId);
+        if (!taskRepository.existsByCategoryIdAndId(categoryId, taskId))
+            throw new ResourceNotFoundException(Category.class, categoryId, Task.class, taskId);
     }
 }

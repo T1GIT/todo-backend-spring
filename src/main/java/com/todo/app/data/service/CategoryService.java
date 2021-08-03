@@ -14,7 +14,7 @@ public interface CategoryService {
 
     Category add(long userId, Category category) throws ResourceNotFoundException;
 
-    void changeName(long userId, long categoryId, String newName) throws ResourceNotFoundException, NotOwnerException;
+    void changeName(long userId, long categoryId, String name) throws ResourceNotFoundException, NotOwnerException;
 
     void delete(long userId, long categoryId) throws ResourceNotFoundException, NotOwnerException;
 }

@@ -28,40 +28,34 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public Session create(long userId, String fingerprint) throws ResourceNotFoundException {
-        return sessionRepository.saveAndFlush(
-                userRepository.findById(userId).map(user -> {
-                    sessionRepository.findByFingerprint(fingerprint).ifPresent(sessionRepository::delete);
-                    return new Session().edit(s -> {
-                        s.setRefresh(genValue());
-                        s.setExpires(new Date(System.currentTimeMillis() + RefreshProvider.DURATION.toMillis()));
-                        s.setFingerprint(fingerprint);
-                        user.addSession(s);
-                    });
-                }).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
+        checkUserById(userId);
+        User user = userRepository.getOne(userId);
+        sessionRepository.deleteAllByUserIdAndFingerprint(userId, fingerprint);
+        Session session = new Session();
+        session.setRefresh(genValue());
+        session.setExpires(new Date(System.currentTimeMillis() + RefreshProvider.DURATION.toMillis()));
+        session.setFingerprint(fingerprint);
+        session.setUser(user);
+        sessionRepository.saveAndFlush(session);
+        return session;
     }
 
+    // TODO: Add userId and jwt to get it
     @Override
     public Session update(String refresh, String fingerprint) {
-        return sessionRepository.findByRefresh(refresh).map(session -> {
-            if (session.getExpires().compareTo(new Date()) < 0)
-                throw new ExpiredRefreshException(session.getId(), session.getRefresh());
-            if (!session.getFingerprint().equals(fingerprint))
-                throw new InvalidFingerprintException(session, fingerprint);
-            return sessionRepository.saveAndFlush(
-                    session.edit(s -> {
-                        s.setRefresh(genValue());
-                        s.setExpires(new Date(System.currentTimeMillis() + RefreshProvider.DURATION.toMillis()));
-                    }));
-        }).orElseThrow(() -> new ResourceNotFoundException(Session.class, "value", refresh));
+        checkSessionByRefresh(refresh);
+        Session session = sessionRepository.getByRefresh(refresh);
+        checkSessionExpiresAndFingerprint(session, fingerprint);
+        session.setRefresh(genValue());
+        session.setExpires(new Date(System.currentTimeMillis() + RefreshProvider.DURATION.toMillis()));
+        sessionRepository.saveAndFlush(session);
+        return session;
     }
 
     @Override
     public void delete(String refresh) {
-        sessionRepository.findByRefresh(refresh).ifPresentOrElse(
-                sessionRepository::delete,
-                () -> {
-                    throw new ResourceNotFoundException(Session.class, "refresh", refresh);
-                });
+        checkSessionByRefresh(refresh);
+        sessionRepository.deleteByRefresh(refresh);
     }
 
     private String genValue() {
@@ -70,5 +64,22 @@ public class SessionServiceImpl implements SessionService {
             value = KeyGenerator.string(KeyLength.REFRESH);
         } while (sessionRepository.existsByRefresh(value));
         return value;
+    }
+
+    private void checkUserById(long userId) throws ResourceNotFoundException {
+        if (!userRepository.existsById(userId))
+            throw new ResourceNotFoundException(User.class, userId);
+    }
+    
+    private void checkSessionByRefresh(String refresh) throws ResourceNotFoundException {
+        if (!sessionRepository.existsByRefresh(refresh))
+            throw new ResourceNotFoundException(Session.class, "refresh", refresh);
+    }
+
+    private void checkSessionExpiresAndFingerprint(Session session, String fingerprint) throws ExpiredRefreshException, InvalidFingerprintException {
+        if (session.getExpires().before(new Date()))
+            throw new ExpiredRefreshException(session.getId(), session.getRefresh());
+        if (!session.getFingerprint().equals(fingerprint))
+            throw new InvalidFingerprintException(session, fingerprint);
     }
 }

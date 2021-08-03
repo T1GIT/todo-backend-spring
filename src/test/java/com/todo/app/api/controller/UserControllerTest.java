@@ -164,7 +164,6 @@ class UserControllerTest {
                 .delete("/user")
                 .header("authorization", "Bearer " + jwt))
                 .andExpect(status().isNoContent());
-        assertNull(userRepository.findByEmail(email).orElse(null));
         assertEquals(0, userRepository.count());
     }
 

@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 public class InvalidPswException extends SecurityException {
-    public InvalidPswException(String email) {
-        super("Invalid password for user with email %s"
-                .formatted(email));
+    public InvalidPswException(String psw) {
+        super("Invalid password %s"
+                .formatted(psw));
     }
 }

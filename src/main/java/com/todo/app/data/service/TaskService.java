@@ -14,9 +14,9 @@ public interface TaskService {
 
     Task add(long userId, long categoryId, Task task) throws ResourceNotFoundException, NotOwnerException;
 
-    void update(long userId, long taskId, Task newTask) throws ResourceNotFoundException, NotOwnerException;
+    void update(long userId, long categoryId, long taskId, Task task) throws ResourceNotFoundException, NotOwnerException;
 
-    void setCompleted(long userId, long taskId, boolean isCompleted) throws ResourceNotFoundException, NotOwnerException;
+    void setCompleted(long userId, long categoryId, long taskId, boolean isCompleted) throws ResourceNotFoundException, NotOwnerException;
 
-    void delete(long userId, long taskId) throws ResourceNotFoundException, NotOwnerException;
+    void delete(long userId, long categoryId, long taskId) throws ResourceNotFoundException, NotOwnerException;
 }
