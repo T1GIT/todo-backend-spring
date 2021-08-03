@@ -17,10 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -127,13 +124,12 @@ public interface AuthorisationController {
             @ApiResponse(responseCode = "204", description = "All session data was cleaned")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PostMapping(
-            value = "/logout")
+    @DeleteMapping
     void logout(HttpServletRequest request, HttpServletResponse response);
 
     @Operation(
             description = "Gets fingerprint and the refresh token from the cookie, " +
-                    "creates new JWT and refresh token? and responses with new JWT, " +
+                    "creates new JWT and refresh token and responses with new JWT, " +
                     "attaches new refresh token to the cookies")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "JSON object with fingerprint",
@@ -153,8 +149,7 @@ public interface AuthorisationController {
             @ApiResponse(responseCode = "404", description = "Refresh token was not found in the database", content = @Content)
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(
-            value = "/refresh",
+    @PutMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     JwtJson refresh(
