@@ -34,8 +34,8 @@ class HashTest {
 
     @Test
     void speedTest() {
-        int min = 300;
-        int max = 1000;
+        int min = 100;
+        int max = 2000;
         String hash = Hash.hash(psw);
         String invalidHash = Hash.hash("invalid_" + psw);
         assertThrows(

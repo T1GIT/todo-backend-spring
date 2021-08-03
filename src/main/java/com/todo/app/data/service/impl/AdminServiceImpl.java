@@ -20,9 +20,14 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void changeRole(long userId, Role role) {
-        userRepository.saveAndFlush(
-                userRepository.findById(userId).map(user ->
-                        user.edit(u -> u.setRole(role))
-                ).orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
+        checkUserById(userId);
+        User user = userRepository.getOne(userId);
+        user.setRole(role);
+        userRepository.saveAndFlush(user);
+    }
+
+    private void checkUserById(long userId) throws ResourceNotFoundException {
+        if (!userRepository.existsById(userId))
+            throw new ResourceNotFoundException(User.class, userId);
     }
 }

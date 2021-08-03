@@ -3,6 +3,7 @@ package com.todo.app.data.service;
 import com.todo.app.TodoApplication;
 import com.todo.app.data.model.Category;
 import com.todo.app.data.model.User;
+import com.todo.app.data.repo.CategoryRepository;
 import com.todo.app.data.util.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = TodoApplication.class)
 @TestPropertySource("classpath:application_test.properties")
+@Transactional
 class CategoryServiceTest {
 
     static User user;
     static String name = "some category name";
 
+    @Autowired CategoryRepository categoryRepository;
     @Autowired UserService userService;
     @Autowired CategoryService categoryService;
 
@@ -34,6 +38,7 @@ class CategoryServiceTest {
                 eUser.setEmail("example@email.com");
                 eUser.setPsw("some password");
             }));
+        categoryRepository.deleteAll();
     }
 
     @AfterEach
@@ -56,7 +61,7 @@ class CategoryServiceTest {
     @Test
     void add() {
         int amount = 100;
-        user.getCategories().forEach(c -> categoryService.delete(user.getId(), c.getId()));
+        categoryRepository.deleteAll();
         insertCategories(user.getId(), amount);
         List<Category> categories = categoryService.getOf(user.getId());
         assertEquals(amount, categories.size());
@@ -69,7 +74,6 @@ class CategoryServiceTest {
     void changeName() {
         String newName = "some new name";
         int amount = 100;
-        user.getCategories().forEach(c -> categoryService.delete(user.getId(), c.getId()));
         insertCategories(user.getId(), amount);
         List<Category> categories = categoryService.getOf(user.getId());
         assertEquals(amount, categories.size());
@@ -83,13 +87,11 @@ class CategoryServiceTest {
 
     @Test
     void delete() {
-        Category category = categoryService.add(user.getId(), new Category()
-                .edit(c -> c.setName(name)));
-        categoryService.delete(user.getId(), category.getId());
-        assertThrows(
-                ResourceNotFoundException.class,
-                () -> categoryService.delete(user.getId(), category.getId()));
-        System.out.println(category);
+        int amount = 100;
+        insertCategories(user.getId(), amount);
+        for (Category category: categoryService.getOf(user.getId())) {
+            categoryService.delete(user.getId(), category.getId());
+        }
     }
 
     @Test

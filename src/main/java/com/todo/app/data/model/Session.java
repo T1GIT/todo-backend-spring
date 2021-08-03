@@ -30,9 +30,12 @@ public class Session extends AuditModel<Session> {
     @Pattern(regexp = Validator.FINGERPRINT_PATTERN)
     @Column(nullable = false, unique = true, length = 50)
     protected String fingerprint;
+
     @Schema(example = "fihefUHFUe7EFhuh8987HOfheuhEUg38Hefhus802efF")
     @Column(nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private String refresh;
+
     @Schema(example = "2022-12-31",
             accessMode = Schema.AccessMode.WRITE_ONLY)
     @Column(nullable = false)

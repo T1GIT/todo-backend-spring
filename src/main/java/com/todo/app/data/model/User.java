@@ -66,35 +66,17 @@ public class User extends AuditModel<User> {
 
     @JsonIgnore
     @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final Set<Category> categories = new HashSet<>();
-    
+
     @JsonIgnore
     @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final Set<Session> sessions = new HashSet<>();
-
-    public void addCategory(Category category) {
-        this.categories.add(category);
-        category.setUser(this);
-    }
-
-    public void removeCategory(Category category) {
-        this.categories.remove(category);
-        category.setUser(null);
-    }
-
-    public void addSession(Session session) {
-        this.sessions.add(session);
-        session.setUser(this);
-    }
-
-    public void removeSession(Session session) {
-        this.sessions.remove(session);
-        session.setUser(null);
-    }
 }

@@ -12,9 +12,15 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
     Optional<Session> findByRefresh(String refresh);
 
+    Session getByRefresh(String refresh);
+
     Optional<Session> findByFingerprint(String fingerprint);
 
-    boolean existsByRefresh(String value);
+    boolean existsByRefresh(String refresh);
 
-    void deleteByRefresh(String value);
+    void deleteAllByUserIdAndFingerprint(long userId, String fingerprint);
+
+    void deleteAllByUserId(long userId);
+
+    void deleteByRefresh(String refresh);
 }

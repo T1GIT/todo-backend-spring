@@ -21,7 +21,7 @@ import java.util.List;
 @Tag(name = "Category controller",
         description = "Controller to provide operations with category models")
 @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME)
-@RequestMapping("/todo")
+@RequestMapping("/todo/categories")
 public interface CategoryController {
 
     @Operation(
@@ -31,7 +31,7 @@ public interface CategoryController {
             @ApiResponse(responseCode = "401", description = "Unauthorised access", content = @Content)
     })
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     List<Category> getCategoriesByUser();
 
     @Operation(
@@ -55,7 +55,7 @@ public interface CategoryController {
             @ApiResponse(responseCode = "401", description = "Unauthorised access", content = @Content)
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> addCategory(
             @RequestBody Category category);
 
@@ -83,7 +83,7 @@ public interface CategoryController {
             @ApiResponse(responseCode = "403", description = "Authorised user is not an owner of the category")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PatchMapping(value = "/category/{categoryId}/name", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/{categoryId}/name", produces = MediaType.APPLICATION_JSON_VALUE)
     void changeName(
             @PathVariable long categoryId,
             @RequestBody Category category);
@@ -99,7 +99,7 @@ public interface CategoryController {
             @ApiResponse(responseCode = "403", description = "Authorised user is not an owner of the category")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping(value = "/category/{categoryId}")
+    @DeleteMapping(value = "/{categoryId}")
     void deleteCategory(
             @PathVariable long categoryId);
 }

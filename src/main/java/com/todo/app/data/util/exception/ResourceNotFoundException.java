@@ -19,4 +19,12 @@ public class ResourceNotFoundException extends DataException {
                 "Model of class %s with attribute %s equal %s not found",
                 modelClass.getSimpleName(), attrName, value));
     }
+
+    public ResourceNotFoundException(
+            Class<? extends AbstractModel<?>> owner, long ownerId,
+            Class<? extends AbstractModel<?>> dependent, long dependentId) {
+        super(String.format(
+                "Model %s with id %d does not have model %s with id %d",
+                owner.getSimpleName(), ownerId, dependent.getSimpleName(), dependentId));
+    }
 }

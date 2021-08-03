@@ -11,6 +11,7 @@ import com.todo.app.data.repo.CategoryRepository;
 import com.todo.app.data.repo.TaskRepository;
 import com.todo.app.data.repo.UserRepository;
 import com.todo.app.security.token.RefreshProvider;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,19 +76,12 @@ class TaskControllerTest {
                 .andDo(mvcResult -> jwt = parser.fromJson(
                         mvcResult.getResponse().getContentAsString(), JwtJson.class)
                         .getJwt());
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .post("/todo/category")
-                .header("authorization", "Bearer " + jwt)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(parser.toJson(new Category().edit(c -> {
-                    c.setName("category");
-                }))))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists("location"))
-                .andReturn();
-        String location = result.getResponse().getHeader("location");
-        categoryId = Long.parseLong(location.substring(location.lastIndexOf("/") + 1));
+        User user = userRepository.getByEmail(email);
+        Category category = new Category();
+        category.setName("category");
+        category.setUser(user);
+        categoryRepository.saveAndFlush(category);
+        categoryId = category.getId();
     }
 
     @AfterEach
@@ -98,12 +92,11 @@ class TaskControllerTest {
     @Test
     void getTasksByCategory() throws Exception {
         mvc.perform(MockMvcRequestBuilders
-                .get("/todo/category/" + categoryId + "/tasks")
+                .get("/todo/categories/" + categoryId + "/tasks")
                 .header("authorization", "Bearer " + jwt))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(
-                        categoryRepository.getOne(categoryId)
-                                .getTasks().size()
+                        taskRepository.getAllByCategoryId(categoryId).size()
                 ));
     }
 
@@ -122,7 +115,7 @@ class TaskControllerTest {
         String newDesc = "new " + desc;
         long taskId = createTaskByRequest();
         mvc.perform(MockMvcRequestBuilders
-                .put("/todo/task/" + taskId)
+                .put("/todo/categories/" + categoryId + "/tasks/" + taskId)
                 .header("authorization", "Bearer " + jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -140,7 +133,7 @@ class TaskControllerTest {
     void changeCompleted() throws Exception {
         long taskId = createTaskByRequest();
         mvc.perform(MockMvcRequestBuilders
-                .patch("/todo/task/" + taskId + "/completed")
+                .patch("/todo/categories/" + categoryId + "/tasks/" + taskId + "/completed")
                 .header("authorization", "Bearer " + jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -152,7 +145,7 @@ class TaskControllerTest {
         assertTrue(task.isCompleted());
         assertNotNull(task.getExecuteDate());
         mvc.perform(MockMvcRequestBuilders
-                .patch("/todo/task/" + taskId + "/completed")
+                .patch("/todo/categories/" + categoryId + "/tasks/" + taskId + "/completed")
                 .header("authorization", "Bearer " + jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -169,7 +162,7 @@ class TaskControllerTest {
     void deleteTask() throws Exception {
         long taskId = createTaskByRequest();
         mvc.perform(MockMvcRequestBuilders
-                .delete("/todo/task/" + taskId)
+                .delete("/todo/categories/" + categoryId + "/tasks/" + taskId)
                 .header("authorization", "Bearer " + jwt))
                 .andExpect(status().isNoContent());
         assertFalse(taskRepository.existsById(taskId));
@@ -181,7 +174,7 @@ class TaskControllerTest {
 
     long createTaskByRequest() throws Exception {
         MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .post("/todo/category/" + categoryId + "/task")
+                .post("/todo/categories/" + categoryId + "/tasks")
                 .header("authorization", "Bearer " + jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
