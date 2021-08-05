@@ -10,6 +10,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springdoc.core.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,6 +26,14 @@ public class SwaggerConfig {
     private String contextPath;
     @Value("${server.port}")
     private String port;
+    @Value("${springdoc.swagger-ui.path}")
+    private String docsUrl;
+
+    @Bean
+    public void printLink() {
+        System.out.printf("API documentation is on page: " +
+                "%s:%s%s%s%n", TodoApplication.ADDRESS, port, contextPath, docsUrl);
+    }
 
     @Bean
     public OpenAPI openAPI() {

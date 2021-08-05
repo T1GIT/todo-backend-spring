@@ -72,7 +72,6 @@ public interface AuthorisationController {
             @ApiResponse(responseCode = "422", description = "Some of the credentials is incorrect", content = @Content)
     })
     @PostMapping(
-            value = "/register",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
